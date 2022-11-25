@@ -1,0 +1,6 @@
+Change Default NPM:
+ nvm alias default 16.10.0
+PSQL cli:
+ sudo -u postgres psql
+Eslint fix command:
+ npm run lint -- --fix
