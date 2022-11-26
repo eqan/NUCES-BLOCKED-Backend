@@ -1,15 +1,8 @@
 import { verifyMessage } from '@ethersproject/wallet';
-import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Users } from 'src/users/entities/users.entity';
 import * as bcrypt from 'bcrypt';
-import { UsersService } from 'src/users/users.service';
 import { LoginUserInput } from 'src/users/dto/logged-user.input';
 
 @Injectable()

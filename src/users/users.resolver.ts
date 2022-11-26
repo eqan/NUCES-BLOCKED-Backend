@@ -39,7 +39,7 @@ export class UsersResolver extends BaseProvider<Users> {
    * @param createUsersInput
    * @returns Users
    */
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Mutation(() => Users, { name: 'CreateUser' })
   async create(
     @Args('CreateUserInput') createUsersInput: CreateUserInput,
@@ -59,10 +59,12 @@ export class UsersResolver extends BaseProvider<Users> {
   @UseGuards(JwtAuthGuard)
   @Mutation(() => Users, { name: 'DeleteUser' })
   async delete(
-    @Args('DeleteUserInput') deleteUserInput: DeleteUsersInput,
+    @Args('DeleteUserInput', { nullable: true })
+    deleteUserInput: DeleteUsersInput,
   ): Promise<void> {
     try {
-      return await this.userService.deleteUsers(deleteUserInput);
+      await this.userService.deleteUsers(deleteUserInput);
+      return null;
     } catch (error) {}
   }
 
@@ -90,8 +92,8 @@ export class UsersResolver extends BaseProvider<Users> {
    * @returns User
    */
   @UseGuards(JwtAuthGuard)
-  @Query(() => Users, { name: 'GetUserDataByuserId', nullable: true })
-  async show(@Args('userId') id: string): Promise<Users> {
+  @Query(() => Users, { name: 'GetUserDataByUserEmail', nullable: true })
+  async show(@Args('userEmail') id: string): Promise<Users> {
     try {
       return await this.userService.findOneByEmail(id);
     } catch (error) {
@@ -107,11 +109,10 @@ export class UsersResolver extends BaseProvider<Users> {
   @UseGuards(JwtAuthGuard)
   @Query(() => GetAllUsers, {
     name: 'GetAllUsers',
-    nullable: true,
-    defaultValue: {},
   })
   async index(
-    @Args('filterUserDto') filterUserDto: FilterUserDto,
+    @Args('filterUserDto', { nullable: true, defaultValue: {} })
+    filterUserDto: FilterUserDto,
   ): Promise<GetAllUsers> {
     try {
       return await this.userService.findAllUsers(filterUserDto);
