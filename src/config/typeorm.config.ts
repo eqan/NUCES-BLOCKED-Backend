@@ -3,6 +3,7 @@ import {
   TypeOrmModuleAsyncOptions,
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
+import { Students } from 'src/students/entities/students.entity';
 import { Users } from 'src/users/entities/users.entity';
 
 export default class TypeOrmConfig {
@@ -14,7 +15,7 @@ export default class TypeOrmConfig {
       username: config.get('DB_USER'),
       password: config.get('POSTGRES_PASSWORD'),
       database: config.get('POSTGRES_DB'),
-      entities: [Users],
+      entities: [Users, Students],
       synchronize: true,
     };
   }

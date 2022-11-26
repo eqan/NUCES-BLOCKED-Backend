@@ -11,6 +11,11 @@ export enum SystemErrors {
   USER_NOT_FOUND = 'E8: User not found!',
   EMAIL_OR_PASSWORD_INCORRECT = 'E9: Email Or Password Incorrect!',
   USER_ALREADY_PRESENT = 'E10: User With this email already created!',
+  CREATE_STUDENT = 'E11: Unable To Create Student',
+  UPDATE_STUDENT = 'E12: Unable To Update Student',
+  DELETE_STUDENT = 'E13: Unable To Delete Student',
+  FIND_STUDENT = 'E14: Unable To Find All Student',
+  GET_STUDENT_DATA_BY_ID = 'E15: Unable To Fetch Student Data By ID',
 }
 
 registerEnumType(SystemErrors, {

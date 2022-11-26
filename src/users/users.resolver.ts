@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { SystemErrors } from 'src/constants/errors.enum';
 import BaseProvider from 'src/core/base.BaseProvider';
 import { CreateUserInput } from './dto/create-user.input';
 import { DeleteUsersInput } from './dto/delete-users.input';
@@ -32,8 +31,6 @@ export class UsersResolver extends BaseProvider<Users> {
     @Args('LoginUserInput') loginUserInput: LoginUserInput,
   ): Promise<{ access_token: string }> {
     const token = this.userService.loginUser(loginUserInput);
-    //  response.headers.set('Authorization', 'Bearer ' + token);
-    //  return response;
     return token;
   }
 
@@ -42,6 +39,7 @@ export class UsersResolver extends BaseProvider<Users> {
    * @param createUsersInput
    * @returns Users
    */
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Users, { name: 'CreateUser' })
   async create(
     @Args('CreateUserInput') createUsersInput: CreateUserInput,
@@ -92,7 +90,7 @@ export class UsersResolver extends BaseProvider<Users> {
    * @returns User
    */
   @UseGuards(JwtAuthGuard)
-  @Query(() => Users, { name: 'GetUserDataByuserId' })
+  @Query(() => Users, { name: 'GetUserDataByuserId', nullable: true })
   async show(@Args('userId') id: string): Promise<Users> {
     try {
       return await this.userService.findOneByEmail(id);
@@ -107,7 +105,11 @@ export class UsersResolver extends BaseProvider<Users> {
    * @returns Searched or all users
    */
   @UseGuards(JwtAuthGuard)
-  @Query(() => GetAllUsers, { name: 'GetAllUsers' })
+  @Query(() => GetAllUsers, {
+    name: 'GetAllUsers',
+    nullable: true,
+    defaultValue: {},
+  })
   async index(
     @Args('filterUserDto') filterUserDto: FilterUserDto,
   ): Promise<GetAllUsers> {

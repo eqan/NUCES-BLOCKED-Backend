@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { SystemErrors } from 'src/constants/errors.enum';
@@ -14,7 +10,6 @@ import { LoginUserInput } from './dto/logged-user.input';
 import { UpdateUsersInput } from './dto/update-user.input';
 import { Users } from './entities/users.entity';
 import * as bcrypt from 'bcrypt';
-import { emit } from 'process';
 
 @Injectable()
 export class UsersService {

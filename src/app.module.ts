@@ -1,12 +1,12 @@
 import { ApolloDriver } from '@nestjs/apollo';
-import { Injectable, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { response } from 'express';
 import { join } from 'path';
 import { typeOrmConfigAsync } from './config/typeorm.config';
+import { StudentsModule } from './students/students.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -39,6 +39,7 @@ import { UsersModule } from './users/users.module';
     }),
     // Modules
     UsersModule,
+    StudentsModule,
   ],
 })
 export class AppModule {}
