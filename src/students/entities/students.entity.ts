@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { IsEmail } from 'class-validator';
 import { BaseEntity, Column, Entity, PrimaryColumn, Unique } from 'typeorm';
 
-/**Create users table in database
+/**Create students table in database
  *
  */
 @ObjectType()

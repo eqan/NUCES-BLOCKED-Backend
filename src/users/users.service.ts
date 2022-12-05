@@ -24,7 +24,7 @@ export class UsersService {
    * @params createUse
    * @return Users
    */
-  async createUser(createUserInput: CreateUserInput) {
+  async create(createUserInput: CreateUserInput) {
     try {
       const oldUser = await this.usersRepo.findOneBy({
         email: createUserInput.email,
@@ -48,7 +48,7 @@ export class UsersService {
    * @param email
    * @returns userData
    */
-  async findOneByEmail(email: string): Promise<Users> {
+  async show(email: string): Promise<Users> {
     try {
       const userData = await this.usersRepo.findOneBy({ email });
       if (!userData) return null;
@@ -66,7 +66,7 @@ export class UsersService {
    * @returns access token
    */
   async loginUser(loginUserInput: LoginUserInput) {
-    let user = await this.findOneByEmail(loginUserInput.email);
+    let user = await this.show(loginUserInput.email);
     if (user) {
       user = await this.authService.validateUser(loginUserInput, user.password);
     }
@@ -82,13 +82,11 @@ export class UsersService {
    * @param updateUsersInput
    * @returns updated user
    */
-  async updateUsersAttribute(
-    updateUsersInput: UpdateUsersInput,
-  ): Promise<Users> {
+  async update(updateUsersInput: UpdateUsersInput): Promise<Users> {
     try {
       const { id, ...rest } = updateUsersInput;
       await this.usersRepo.update({ id }, rest);
-      return this.findOneByEmail(id);
+      return this.show(id);
     } catch (error) {
       throw new BadRequestException(SystemErrors.UPDATE_USER);
     }
@@ -99,13 +97,13 @@ export class UsersService {
    * @param deleteUsers
    * @returns Message that user successfully deleted
    */
-  async deleteUsers(deleteWithIds: { id: string[] }): Promise<void> {
+  async delete(deleteWithIds: { id: string[] }): Promise<void> {
     try {
       const ids = deleteWithIds.id;
       await this.usersRepo.delete({ id: In(ids) });
       return null;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       throw new BadRequestException(SystemErrors.DELETE_USER);
     }
   }
@@ -115,9 +113,9 @@ export class UsersService {
    * @@params No Params
    * @returns Array of Users and Total Number of Users
    */
-  async findAllUsers(filterDto: FilterUserDto): Promise<GetAllUsers> {
+  async index(filterDto: FilterUserDto): Promise<GetAllUsers> {
     try {
-      const { page, limit, ...rest } = filterDto;
+      const { page = 1, limit = 20, ...rest } = filterDto;
       const [items, total] = await Promise.all([
         this.usersRepo.find({
           where: {

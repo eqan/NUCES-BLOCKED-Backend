@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { response } from 'express';
 import { join } from 'path';
 import { typeOrmConfigAsync } from './config/typeorm.config';
+import { CertificatesModule } from './students-certificates/certificates.module';
 import { StudentsModule } from './students/students.module';
 import { UsersModule } from './users/users.module';
 
@@ -40,6 +41,7 @@ import { UsersModule } from './users/users.module';
     // Modules
     UsersModule,
     StudentsModule,
+    CertificatesModule,
   ],
 })
 export class AppModule {}

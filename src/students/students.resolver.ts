@@ -30,7 +30,7 @@ export class StudentsResolver extends BaseProvider<Students> {
     @Args('CreateStudentInput') createStudentsInput: CreateStudentInput,
   ): Promise<Students> {
     try {
-      return await this.studentService.createStudent(createStudentsInput);
+      return await this.studentService.create(createStudentsInput);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -47,7 +47,7 @@ export class StudentsResolver extends BaseProvider<Students> {
     @Args('DeleteStudentInput') deleteStudentInput: DeleteStudentsInput,
   ): Promise<void> {
     try {
-      return await this.studentService.deleteStudents(deleteStudentInput);
+      return await this.studentService.delete(deleteStudentInput);
     } catch (error) {}
   }
 
@@ -63,7 +63,7 @@ export class StudentsResolver extends BaseProvider<Students> {
     updateStudentStatus: UpdateStudentInput,
   ): Promise<Students> {
     try {
-      return await this.studentService.updateStudent(updateStudentStatus);
+      return await this.studentService.update(updateStudentStatus);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -78,7 +78,7 @@ export class StudentsResolver extends BaseProvider<Students> {
   @Query(() => Students, { name: 'GetStudentDataByuserId', nullable: true })
   async show(@Args('studentId') id: string): Promise<Students> {
     try {
-      return await this.studentService.findOneById(id);
+      return await this.studentService.show(id);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -98,7 +98,7 @@ export class StudentsResolver extends BaseProvider<Students> {
     filterStudentDto: FilterStudentDto,
   ): Promise<GetAllStudents> {
     try {
-      return await this.studentService.findAllStudents(filterStudentDto);
+      return await this.studentService.index(filterStudentDto);
     } catch (error) {
       throw new BadRequestException(error);
     }

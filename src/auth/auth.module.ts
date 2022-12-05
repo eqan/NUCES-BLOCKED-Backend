@@ -1,9 +1,8 @@
-import { forwardRef, Injectable, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { forwardRef, Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from 'src/users/users.module';
-import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy.service';
 
