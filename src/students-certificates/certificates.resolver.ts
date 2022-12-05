@@ -77,10 +77,10 @@ export class CertificatessResolver extends BaseProvider<Certificates> {
    */
   @UseGuards(JwtAuthGuard)
   @Query(() => Certificates, {
-    name: 'GetCertificateDataByCertificateEmail',
+    name: 'GetCertificateByRollNumber',
     nullable: true,
   })
-  async show(@Args('userEmail') id: string): Promise<Certificates> {
+  async show(@Args('rollNumber') id: string): Promise<Certificates> {
     try {
       return await this.certificateService.show(id);
     } catch (error) {
@@ -98,7 +98,7 @@ export class CertificatessResolver extends BaseProvider<Certificates> {
     name: 'GetAllCertificates',
   })
   async index(
-    @Args('filterCertificateDto', { nullable: true, defaultValue: {} })
+    @Args('FilterCertificateInput', { nullable: true, defaultValue: {} })
     filterCertificateDto: FilterCertificateInput,
   ): Promise<GetAllCertificates> {
     try {

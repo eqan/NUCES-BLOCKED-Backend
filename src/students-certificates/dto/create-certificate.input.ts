@@ -7,14 +7,6 @@ export class CreateCertificateInput {
   @Field()
   id: string;
 
-  @IsString({ message: 'Name must be a String' })
-  @Field()
-  name: string;
-
-  @IsString({ message: 'RollNumber must be a String' })
-  @Field()
-  rollNumber: string;
-
   @IsString({ message: 'Url must be a String' })
   @Field()
   url: string;

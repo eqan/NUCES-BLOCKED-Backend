@@ -2,6 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { Students } from 'src/students/entities/students.entity';
 import {
   BaseEntity,
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
@@ -16,7 +17,7 @@ import {
  */
 @ObjectType()
 @Entity('Certificates')
-@Unique(['id', 'rollNumber', 'url'])
+@Unique(['id', 'url'])
 export class Certificates extends BaseEntity {
   @Field()
   @PrimaryColumn({
@@ -30,18 +31,15 @@ export class Certificates extends BaseEntity {
   date: Date;
 
   @Field()
-  @Column({ type: 'text' })
-  name: string;
-
-  @Field()
-  @Column({ type: 'text', unique: true })
-  rollNumber: string;
-
-  @Field()
   @Column({ type: 'text', unique: true })
   url: string;
 
   @OneToOne(() => Students, { cascade: true })
-  @JoinColumn({ name: 'rollNumber' })
+  @JoinColumn({ name: 'id' })
   student: Students;
+
+  @BeforeInsert()
+  newid() {
+    this.id = this.student.id;
+  }
 }

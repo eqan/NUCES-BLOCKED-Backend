@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SystemErrors } from 'src/constants/errors.enum';
 import { FilterCertificateInput } from './dto/filter.certificates.dto';
 import { In, Repository } from 'typeorm';
 import { CreateCertificateInput } from './dto/create-certificate.input';
@@ -83,7 +82,7 @@ export class CertificatesService {
    */
   async index(filterDto: FilterCertificateInput): Promise<GetAllCertificates> {
     try {
-      const { page, limit, ...rest } = filterDto;
+      const { page = 1, limit = 20, ...rest } = filterDto;
       const [items, total] = await Promise.all([
         this.certificateRepo.find({
           where: {
