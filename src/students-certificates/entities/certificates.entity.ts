@@ -1,29 +1,22 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Students } from 'src/students/entities/students.entity';
+import { Student } from 'src/students/entities/students.entity';
 import {
-  BaseEntity,
   BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 
-/**Create certificates table in database
- *
- */
 @ObjectType()
-@Entity('Certificates')
-@Unique(['id', 'url'])
-export class Certificates extends BaseEntity {
+@Entity('Certificate')
+@Unique(['id', 'studentId'])
+export class Certificate {
   @Field()
-  @PrimaryColumn({
-    unique: true,
-    type: 'text',
-  })
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Field()
@@ -31,15 +24,22 @@ export class Certificates extends BaseEntity {
   date: Date;
 
   @Field()
-  @Column({ type: 'text', unique: true })
+  @Column({ unique: true })
   url: string;
 
-  @OneToOne(() => Students, { cascade: true })
-  @JoinColumn({ name: 'id' })
-  student: Students;
+  @Field()
+  @Column({ unique: true })
+  studentId: string;
+
+  @Field(() => Student)
+  @OneToOne(() => Student, (student) => student.id)
+  @JoinColumn({ name: 'studentId' })
+  student: Student;
 
   @BeforeInsert()
-  newid() {
-    this.id = this.student.id;
+  setDate() {
+    if (!this.date) {
+      this.date = new Date();
+    }
   }
 }

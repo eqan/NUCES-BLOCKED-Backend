@@ -11,11 +11,11 @@ import { DeleteStudentsInput } from './dto/delete-students.input';
 import { FilterStudentDto } from './dto/filter.students.dto';
 import { GetAllStudents } from './dto/get-all-students.dto';
 import { UpdateStudentInput } from './dto/update-student.input';
-import { Students } from './entities/students.entity';
+import { Student } from './entities/students.entity';
 import { StudentsService } from './students.service';
 
 @Resolver()
-export class StudentsResolver extends BaseProvider<Students> {
+export class StudentsResolver extends BaseProvider<Student> {
   constructor(private readonly studentService: StudentsService) {
     super();
   }
@@ -25,10 +25,10 @@ export class StudentsResolver extends BaseProvider<Students> {
    * @returns Students
    */
   // @UseGuards(JwtAuthGuard)
-  @Mutation(() => Students, { name: 'CreateStudent' })
+  @Mutation(() => Student, { name: 'CreateStudent' })
   async create(
     @Args('CreateStudentInput') createStudentsInput: CreateStudentInput,
-  ): Promise<Students> {
+  ): Promise<Student> {
     try {
       return await this.studentService.create(createStudentsInput);
     } catch (error) {
@@ -42,7 +42,7 @@ export class StudentsResolver extends BaseProvider<Students> {
    * @returns void
    */
   // @UseGuards(JwtAuthGuard)
-  @Mutation(() => Students, { name: 'DeleteStudent', nullable: true })
+  @Mutation(() => Student, { name: 'DeleteStudent', nullable: true })
   async delete(
     @Args('DeleteStudentInput') deleteStudentInput: DeleteStudentsInput,
   ): Promise<void> {
@@ -57,11 +57,11 @@ export class StudentsResolver extends BaseProvider<Students> {
    * @returns Updated Student
    */
   // @UseGuards(JwtAuthGuard)
-  @Mutation(() => Students, { name: 'UpdateStudent' })
+  @Mutation(() => Student, { name: 'UpdateStudent' })
   async edit(
     @Args('UpdateStudentInput')
     updateStudentStatus: UpdateStudentInput,
-  ): Promise<Students> {
+  ): Promise<Student> {
     try {
       return await this.studentService.update(updateStudentStatus);
     } catch (error) {
@@ -75,8 +75,8 @@ export class StudentsResolver extends BaseProvider<Students> {
    * @returns Student
    */
   // @UseGuards(JwtAuthGuard)
-  @Query(() => Students, { name: 'GetStudentDataByuserId', nullable: true })
-  async show(@Args('studentId') id: string): Promise<Students> {
+  @Query(() => Student, { name: 'GetStudentDataByuserId', nullable: true })
+  async show(@Args('studentId') id: string): Promise<Student> {
     try {
       return await this.studentService.show(id);
     } catch (error) {

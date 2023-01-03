@@ -5,13 +5,13 @@ import { CreateStudentInput } from './dto/create-student.input';
 import { FilterStudentDto } from './dto/filter.students.dto';
 import { GetAllStudents } from './dto/get-all-students.dto';
 import { UpdateStudentInput } from './dto/update-student.input';
-import { Students } from './entities/students.entity';
+import { Student } from './entities/students.entity';
 
 @Injectable()
 export class StudentsService {
   constructor(
-    @InjectRepository(Students)
-    private studentsRepo: Repository<Students>,
+    @InjectRepository(Student)
+    private studentsRepo: Repository<Student>,
   ) {}
 
   /**
@@ -33,7 +33,7 @@ export class StudentsService {
    * @param email
    * @returns userData
    */
-  async show(id: string): Promise<Students> {
+  async show(id: string): Promise<Student> {
     try {
       const userData = await this.studentsRepo.findOneBy({ id });
       if (!userData) return null;
@@ -48,7 +48,7 @@ export class StudentsService {
    * @param updateStudentsInput
    * @returns updated user
    */
-  async update(updateStudentsInput: UpdateStudentInput): Promise<Students> {
+  async update(updateStudentsInput: UpdateStudentInput): Promise<Student> {
     try {
       const { id, ...rest } = updateStudentsInput;
       await this.studentsRepo.update({ id }, rest);

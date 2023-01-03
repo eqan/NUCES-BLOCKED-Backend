@@ -2,32 +2,32 @@ import { BadRequestException, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import BaseProvider from 'src/core/base.BaseProvider';
-import { CreateCertificateInput } from './dto/create-certificate.input';
+import { CreateCertificateDto } from './dto/create-certificate.input';
 import { DeleteCertificatesInput } from './dto/delete-certificates.input';
 import { FilterCertificateInput } from './dto/filter.certificates.dto';
 import { GetAllCertificates } from './dto/get-all-certificates.dto';
 import { UpdateCertificatesInput } from './dto/update-certificates.input';
-import { Certificates } from './entities/certificates.entity';
+import { Certificate } from './entities/certificates.entity';
 import { CertificatesService } from './certificates.service';
 
 @Resolver()
-export class CertificatessResolver extends BaseProvider<Certificates> {
+export class CertificatessResolver extends BaseProvider<Certificate> {
   constructor(private readonly certificateService: CertificatesService) {
     super();
   }
   /**
    * Create Certificate
-   * @param createCertificatesInput
+   * @param createCertificateInput
    * @returns Certificates
    */
-  @UseGuards(JwtAuthGuard)
-  @Mutation(() => Certificates, { name: 'CreateCertificate' })
+  // @UseGuards(JwtAuthGuard)
+  @Mutation(() => Certificate, { name: 'CreateCertificate' })
   async create(
     @Args('CreateCertificateInput')
-    createCertificatesInput: CreateCertificateInput,
-  ): Promise<Certificates> {
+    createCertificateInput: CreateCertificateDto,
+  ): Promise<Certificate> {
     try {
-      return await this.certificateService.create(createCertificatesInput);
+      return await this.certificateService.create(createCertificateInput);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -39,7 +39,7 @@ export class CertificatessResolver extends BaseProvider<Certificates> {
    * @returns void
    */
   @UseGuards(JwtAuthGuard)
-  @Mutation(() => Certificates, { name: 'DeleteCertificate' })
+  @Mutation(() => Certificate, { name: 'DeleteCertificate' })
   async delete(
     @Args('DeleteCertificateInput', { nullable: true })
     deleteCertificateInput: DeleteCertificatesInput,
@@ -58,11 +58,11 @@ export class CertificatessResolver extends BaseProvider<Certificates> {
    * @returns Updated Certificate
    */
   @UseGuards(JwtAuthGuard)
-  @Mutation(() => Certificates, { name: 'UpdateCertificate' })
+  @Mutation(() => Certificate, { name: 'UpdateCertificate' })
   async edit(
     @Args('UpdateCertificateInput')
     updateCertificateStatus: UpdateCertificatesInput,
-  ): Promise<Certificates> {
+  ): Promise<Certificate> {
     try {
       return await this.certificateService.update(updateCertificateStatus);
     } catch (error) {
@@ -76,11 +76,11 @@ export class CertificatessResolver extends BaseProvider<Certificates> {
    * @returns Certificate
    */
   @UseGuards(JwtAuthGuard)
-  @Query(() => Certificates, {
+  @Query(() => Certificate, {
     name: 'GetCertificateByRollNumber',
     nullable: true,
   })
-  async show(@Args('rollNumber') id: string): Promise<Certificates> {
+  async show(@Args('rollNumber') id: string): Promise<Certificate> {
     try {
       return await this.certificateService.show(id);
     } catch (error) {

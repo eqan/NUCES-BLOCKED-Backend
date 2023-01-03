@@ -1,6 +1,14 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IsEmail } from 'class-validator';
-import { BaseEntity, Column, Entity, PrimaryColumn, Unique } from 'typeorm';
+import { Certificate } from 'src/students-certificates/entities/certificates.entity';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToOne,
+  PrimaryColumn,
+  Unique,
+} from 'typeorm';
 
 /**Create students table in database
  *
@@ -8,7 +16,7 @@ import { BaseEntity, Column, Entity, PrimaryColumn, Unique } from 'typeorm';
 @ObjectType()
 @Entity('Students')
 @Unique(['id', 'email'])
-export class Students extends BaseEntity {
+export class Student extends BaseEntity {
   @Field()
   @PrimaryColumn({
     unique: true,
@@ -24,4 +32,8 @@ export class Students extends BaseEntity {
   @Field()
   @Column({ type: 'text' })
   name: string;
+
+  @Field(() => Certificate)
+  @OneToOne(() => Certificate, (certificate) => certificate.id)
+  certificate: Certificate;
 }

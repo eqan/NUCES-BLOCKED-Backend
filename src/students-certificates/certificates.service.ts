@@ -2,16 +2,16 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilterCertificateInput } from './dto/filter.certificates.dto';
 import { In, Repository } from 'typeorm';
-import { CreateCertificateInput } from './dto/create-certificate.input';
+import { CreateCertificateDto } from './dto/create-certificate.input';
 import { GetAllCertificates } from './dto/get-all-certificates.dto';
 import { UpdateCertificatesInput } from './dto/update-certificates.input';
-import { Certificates } from './entities/certificates.entity';
+import { Certificate } from './entities/certificates.entity';
 
 @Injectable()
 export class CertificatesService {
   constructor(
-    @InjectRepository(Certificates)
-    private certificateRepo: Repository<Certificates>,
+    @InjectRepository(Certificate)
+    private certificateRepo: Repository<Certificate>,
   ) {}
 
   /**
@@ -19,7 +19,9 @@ export class CertificatesService {
    * @params createUse
    * @return Certificates
    */
-  async create(createCertificateInput: CreateCertificateInput) {
+  async create(
+    createCertificateInput: CreateCertificateDto,
+  ): Promise<Certificate> {
     try {
       const certificate = this.certificateRepo.create(createCertificateInput);
       return this.certificateRepo.save(certificate);
@@ -33,7 +35,7 @@ export class CertificatesService {
    * @param email
    * @returns userData
    */
-  async show(id: string): Promise<Certificates> {
+  async show(id: string): Promise<Certificate> {
     try {
       const certificateData = await this.certificateRepo.findOneBy({ id });
       if (!certificateData) return null;
@@ -50,7 +52,7 @@ export class CertificatesService {
    */
   async update(
     updateCertificatesInput: UpdateCertificatesInput,
-  ): Promise<Certificates> {
+  ): Promise<Certificate> {
     try {
       const { id, ...rest } = updateCertificatesInput;
       await this.certificateRepo.update({ id }, rest);

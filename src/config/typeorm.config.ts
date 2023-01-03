@@ -3,8 +3,8 @@ import {
   TypeOrmModuleAsyncOptions,
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
-import { Certificates } from 'src/students-certificates/entities/certificates.entity';
-import { Students } from 'src/students/entities/students.entity';
+import { Certificate } from 'src/students-certificates/entities/certificates.entity';
+import { Student } from 'src/students/entities/students.entity';
 import { Users } from 'src/users/entities/users.entity';
 
 export default class TypeOrmConfig {
@@ -16,7 +16,7 @@ export default class TypeOrmConfig {
       username: config.get('DB_USER'),
       password: config.get('POSTGRES_PASSWORD'),
       database: config.get('POSTGRES_DB'),
-      entities: [Users, Students, Certificates],
+      entities: [Users, Student, Certificate],
       synchronize: true,
       dropSchema: true,
     };

@@ -1,13 +1,18 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 @InputType()
-export class CreateCertificateInput {
-  @IsString({ message: 'Hash must be a String' })
+export class CreateCertificateDto {
+  @IsString()
   @Field()
-  id: string;
+  readonly studentId: string;
 
-  @IsString({ message: 'Url must be a String' })
+  @IsOptional()
+  @IsDate()
+  @Field({ nullable: true })
+  readonly date: Date;
+
+  @IsString()
   @Field()
-  url: string;
+  readonly url: string;
 }
