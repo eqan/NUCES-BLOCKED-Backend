@@ -54,7 +54,7 @@ export class CertificatesService {
     updateCertificatesInput: UpdateCertificatesInput,
   ): Promise<Certificate> {
     try {
-      const { id, ...rest } = updateCertificatesInput;
+      const { id, studentId, ...rest } = updateCertificatesInput;
       await this.certificateRepo.update({ id }, rest);
       return this.show(id);
     } catch (error) {
@@ -89,13 +89,15 @@ export class CertificatesService {
         this.certificateRepo.find({
           where: {
             id: rest?.id,
+            studentId: rest?.studentId,
           },
           skip: (page - 1) * limit || 0,
           take: limit || 10,
         }),
         this.certificateRepo.count({
           where: {
-            id: rest.id,
+            id: rest?.id,
+            studentId: rest?.studentId,
           },
         }),
       ]);

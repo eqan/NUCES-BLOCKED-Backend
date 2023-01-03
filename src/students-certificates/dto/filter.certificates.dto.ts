@@ -5,4 +5,7 @@ import { PaginationParam } from './pagination.dto';
 export class FilterCertificateInput extends PaginationParam {
   @Field({ nullable: true })
   id?: string;
+
+  @Field({ nullable: true })
+  studentId?: string;
 }

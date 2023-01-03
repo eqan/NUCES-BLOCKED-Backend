@@ -38,7 +38,7 @@ export class CertificatessResolver extends BaseProvider<Certificate> {
    * @param deleteCertificateInput
    * @returns void
    */
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Mutation(() => Certificate, { name: 'DeleteCertificate' })
   async delete(
     @Args('DeleteCertificateInput', { nullable: true })
@@ -57,7 +57,7 @@ export class CertificatessResolver extends BaseProvider<Certificate> {
    * @param updateCertificateStatus
    * @returns Updated Certificate
    */
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Mutation(() => Certificate, { name: 'UpdateCertificate' })
   async edit(
     @Args('UpdateCertificateInput')
@@ -75,7 +75,7 @@ export class CertificatessResolver extends BaseProvider<Certificate> {
    * @param id
    * @returns Certificate
    */
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Query(() => Certificate, {
     name: 'GetCertificateByRollNumber',
     nullable: true,
@@ -93,7 +93,7 @@ export class CertificatessResolver extends BaseProvider<Certificate> {
    * @param filterCertificateDto
    * @returns Searched or all users
    */
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Query(() => GetAllCertificates, {
     name: 'GetAllCertificates',
   })

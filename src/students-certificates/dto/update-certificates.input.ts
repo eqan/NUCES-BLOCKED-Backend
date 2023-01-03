@@ -3,10 +3,15 @@ import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class UpdateCertificatesInput {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @Field()
+  @Field({ nullable: true })
   id: string;
+
+  @IsOptional()
+  @IsString()
+  @Field({ nullable: true })
+  studentId: string;
 
   @IsOptional()
   @IsString()
