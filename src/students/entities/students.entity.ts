@@ -1,14 +1,20 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsOptional, ValidateNested } from 'class-validator';
 import { Certificate } from 'src/students-certificates/entities/certificates.entity';
 import {
   BaseEntity,
   Column,
   Entity,
+  ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
   Unique,
 } from 'typeorm';
+import { AdminContributions } from './nestedObjects/admin.contribution.entity';
+import { CareerCounsellorContributions } from './nestedObjects/careercounsellor.contribution.entity';
+import { SocietyHeadsContributions } from './nestedObjects/societyhead.contribution.entity';
+import { TeachersContributions } from './nestedObjects/teacher.contribution.entity';
 
 /**Create students table in database
  *
@@ -36,4 +42,34 @@ export class Student extends BaseEntity {
   @Field(() => Certificate)
   @OneToOne(() => Certificate, (certificate) => certificate.id)
   certificate: Certificate;
+
+  @IsOptional()
+  @ValidateNested()
+  @Field(() => AdminContributions, { nullable: true })
+  @OneToOne(() => AdminContributions, (contribution) => contribution.id)
+  AdminContributions: AdminContributions;
+
+  @IsOptional()
+  @ValidateNested()
+  @Field(() => CareerCounsellorContributions, { nullable: true })
+  @OneToMany(
+    () => CareerCounsellorContributions,
+    (contributions) => contributions.studentId,
+  )
+  CareerCounsellorContributions: CareerCounsellorContributions[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Field(() => TeachersContributions, { nullable: true })
+  @OneToMany(() => TeachersContributions, (contributions) => contributions.id)
+  TeachersContributions: TeachersContributions;
+
+  @IsOptional()
+  @ValidateNested()
+  @Field(() => SocietyHeadsContributions, { nullable: true })
+  @OneToMany(
+    () => SocietyHeadsContributions,
+    (contributions) => contributions.id,
+  )
+  SocietyHeadsContributions: SocietyHeadsContributions;
 }

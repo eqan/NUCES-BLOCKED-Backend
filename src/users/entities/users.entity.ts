@@ -4,6 +4,8 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
@@ -44,16 +46,11 @@ export class Users extends BaseEntity {
   type: UserTypes;
 
   @IsOptional()
-  @Field(() => AdminEntity)
-  @Column({ nullable: true, type: 'jsonb' })
-  AdminEntiy?: AdminEntity;
-
-  // @IsOptional()
-  // @Field(() => AdminEntity, { nullable: true })
-  // @OneToOne(() => AdminEntity, {
-  //   eager: true,
-  //   cascade: true,
-  // })
-  // @JoinColumn()
-  // AdminInformation?: AdminEntity;
+  @Field(() => AdminEntity, { nullable: true })
+  @OneToOne(() => AdminEntity, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinColumn()
+  AdminInformation?: AdminEntity;
 }

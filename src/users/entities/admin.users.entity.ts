@@ -1,12 +1,12 @@
-import { Field, ObjectType, InputType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { IsEthereumAddress } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @ObjectType()
-@InputType('AdminInformation')
+@Entity('AdminInformation')
 export class AdminEntity {
-  // @PrimaryGeneratedColumn()
-  // id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Field()
   @IsEthereumAddress({ message: 'Wallet address should be valid' })

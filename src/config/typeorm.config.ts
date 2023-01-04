@@ -17,6 +17,7 @@ export default class TypeOrmConfig {
       password: config.get('POSTGRES_PASSWORD'),
       database: config.get('POSTGRES_DB'),
       entities: [Users, Student, Certificate],
+      autoLoadEntities: true,
       synchronize: true,
       dropSchema: true,
     };
