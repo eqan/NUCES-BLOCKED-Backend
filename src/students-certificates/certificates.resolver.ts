@@ -1,4 +1,4 @@
-import { BadRequestException, UseGuards } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import BaseProvider from 'src/core/base.BaseProvider';
@@ -39,9 +39,9 @@ export class CertificatessResolver extends BaseProvider<Certificate> {
    * @returns void
    */
   // @UseGuards(JwtAuthGuard)
-  @Mutation(() => Certificate, { name: 'DeleteCertificate' })
+  @Mutation(() => Certificate, { name: 'DeleteCertificate', nullable: true })
   async delete(
-    @Args('DeleteCertificateInput', { nullable: true })
+    @Args('DeleteCertificateInput')
     deleteCertificateInput: DeleteCertificatesInput,
   ): Promise<void> {
     try {
@@ -80,7 +80,7 @@ export class CertificatessResolver extends BaseProvider<Certificate> {
     name: 'GetCertificateByRollNumber',
     nullable: true,
   })
-  async show(@Args('rollNumber') id: string): Promise<Certificate> {
+  async show(@Args('id') id: string): Promise<Certificate> {
     try {
       return await this.certificateService.show(id);
     } catch (error) {
@@ -98,7 +98,7 @@ export class CertificatessResolver extends BaseProvider<Certificate> {
     name: 'GetAllCertificates',
   })
   async index(
-    @Args('FilterCertificateInput', { nullable: true, defaultValue: {} })
+    @Args('FilterCertificateInput', { nullable: true })
     filterCertificateDto: FilterCertificateInput,
   ): Promise<GetAllCertificates> {
     try {

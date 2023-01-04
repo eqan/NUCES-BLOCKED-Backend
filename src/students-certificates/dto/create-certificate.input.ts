@@ -5,7 +5,7 @@ import { IsDate, IsOptional, IsString } from 'class-validator';
 export class CreateCertificateDto {
   @IsString()
   @Field()
-  readonly studentId: string;
+  readonly id: string;
 
   @IsOptional()
   @IsDate()

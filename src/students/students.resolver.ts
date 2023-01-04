@@ -42,7 +42,11 @@ export class StudentsResolver extends BaseProvider<Student> {
    * @returns void
    */
   // @UseGuards(JwtAuthGuard)
-  @Mutation(() => Student, { name: 'DeleteStudent', nullable: true })
+  @Mutation(() => Student, {
+    name: 'DeleteStudent',
+    nullable: true,
+    defaultValue: {},
+  })
   async delete(
     @Args('DeleteStudentInput') deleteStudentInput: DeleteStudentsInput,
   ): Promise<void> {
@@ -75,7 +79,7 @@ export class StudentsResolver extends BaseProvider<Student> {
    * @returns Student
    */
   // @UseGuards(JwtAuthGuard)
-  @Query(() => Student, { name: 'GetStudentDataByuserId', nullable: true })
+  @Query(() => Student, { name: 'GetStudentDataByUserId', nullable: true })
   async show(@Args('studentId') id: string): Promise<Student> {
     try {
       return await this.studentService.show(id);

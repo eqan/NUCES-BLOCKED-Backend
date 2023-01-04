@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   /**
-   * Validate user and return signer address or null value
+   * Validate user and return verified user credentials or null value
    * @params message, signature and address
    * @return signer address
    */

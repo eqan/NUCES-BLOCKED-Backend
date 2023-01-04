@@ -1,7 +1,7 @@
 export const returnMessage = (date: string) => {
   return (
-    'I want to login on Rarible at ' +
+    'FASTCFD secret message that is generated on' +
     date +
-    '. I accept the Rarible Terms of Service https://static.rarible.com/terms.pdf and I am at least 13 years old.'
+    ' for testing purposes of this project'
   );
 };

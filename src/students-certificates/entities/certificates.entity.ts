@@ -7,16 +7,17 @@ import {
   Entity,
   JoinColumn,
   OneToOne,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 
 @ObjectType()
 @Entity('Certificate')
-@Unique(['id', 'studentId'])
+@Unique(['id'])
 export class Certificate {
   @Field()
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn({ type: 'text' })
   id: string;
 
   @Field()
@@ -27,14 +28,17 @@ export class Certificate {
   @Column({ unique: true })
   url: string;
 
-  @Field()
-  @Column({ unique: true })
-  studentId: string;
-
   @Field(() => Student)
   @OneToOne(() => Student, (student) => student.id)
-  @JoinColumn({ name: 'studentId' })
+  @JoinColumn({ name: 'id' })
   student: Student;
+
+  @BeforeInsert()
+  setId() {
+    if (!this.id) {
+      this.id = this.student.id;
+    }
+  }
 
   @BeforeInsert()
   setDate() {
