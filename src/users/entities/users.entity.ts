@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IsEmail, IsEnum, IsOptional } from 'class-validator';
+import { IsEmail, IsOptional } from 'class-validator';
 import {
   BaseEntity,
   Column,
@@ -47,4 +47,13 @@ export class Users extends BaseEntity {
   @Field(() => AdminEntity)
   @Column({ nullable: true, type: 'jsonb' })
   AdminEntiy?: AdminEntity;
+
+  // @IsOptional()
+  // @Field(() => AdminEntity, { nullable: true })
+  // @OneToOne(() => AdminEntity, {
+  //   eager: true,
+  //   cascade: true,
+  // })
+  // @JoinColumn()
+  // AdminInformation?: AdminEntity;
 }

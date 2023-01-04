@@ -1,6 +1,12 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { AdminEntity } from '../entities/admin.users.entity';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { CreateAdminEntity } from './nestedObjects/admin.entity.dto';
 
 @InputType()
 export class UpdateUsersInput {
@@ -20,6 +26,7 @@ export class UpdateUsersInput {
   name: string;
 
   @IsOptional()
-  @Field(() => AdminEntity, { nullable: true })
-  AdminEntiy?: AdminEntity;
+  @ValidateNested()
+  @Field(() => CreateAdminEntity, { nullable: true })
+  AdminEntity?: CreateAdminEntity;
 }

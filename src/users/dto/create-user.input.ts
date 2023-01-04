@@ -1,6 +1,15 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'ts-morph';
 import { UserTypes } from '../entities/enum/user.types.enums';
+import { CreateAdminEntity } from './nestedObjects/admin.entity.dto';
 
 @InputType()
 export class CreateUserInput {
@@ -21,4 +30,9 @@ export class CreateUserInput {
   @IsEnum(UserTypes)
   @Field(() => UserTypes)
   type: UserTypes;
+
+  @IsOptional()
+  @ValidateNested()
+  @Field(() => CreateAdminEntity, { nullable: true })
+  AdminEntity?: CreateAdminEntity;
 }
