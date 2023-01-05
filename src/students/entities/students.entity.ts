@@ -61,15 +61,18 @@ export class Student extends BaseEntity {
   @IsOptional()
   @ValidateNested()
   @Field(() => TeachersContributions, { nullable: true })
-  @OneToMany(() => TeachersContributions, (contributions) => contributions.id)
-  TeachersContributions: TeachersContributions;
+  @OneToMany(
+    () => TeachersContributions,
+    (contributions) => contributions.studentId,
+  )
+  TeachersContributions: TeachersContributions[];
 
   @IsOptional()
   @ValidateNested()
   @Field(() => SocietyHeadsContributions, { nullable: true })
   @OneToMany(
     () => SocietyHeadsContributions,
-    (contributions) => contributions.id,
+    (contributions) => contributions.studentId,
   )
   SocietyHeadsContributions: SocietyHeadsContributions;
 }

@@ -21,8 +21,8 @@ export class StudentsService {
    */
   async create(createStudentInput: CreateStudentInput) {
     try {
-      const user = this.studentsRepo.create(createStudentInput);
-      return this.studentsRepo.save(user);
+      const student = this.studentsRepo.create(createStudentInput);
+      return this.studentsRepo.save(student);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -31,13 +31,13 @@ export class StudentsService {
   /**
    * Get Data By Student Address
    * @param email
-   * @returns userData
+   * @returns studentData
    */
   async show(id: string): Promise<Student> {
     try {
-      const userData = await this.studentsRepo.findOneBy({ id });
-      if (!userData) return null;
-      return userData;
+      const studentData = await this.studentsRepo.findOneBy({ id });
+      if (!studentData) return null;
+      return studentData;
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -46,7 +46,7 @@ export class StudentsService {
   /**
    * Update Students Attributes
    * @param updateStudentsInput
-   * @returns updated user
+   * @returns updated student
    */
   async update(updateStudentsInput: UpdateStudentInput): Promise<Student> {
     try {
@@ -61,7 +61,7 @@ export class StudentsService {
   /**
    * DELETE Students
    * @param deleteStudents
-   * @returns Message that user successfully deleted
+   * @returns Message that student successfully deleted
    */
   async delete(deleteWithIds: { id: string[] }): Promise<void> {
     try {
