@@ -5,7 +5,6 @@ import {
   BaseEntity,
   Column,
   Entity,
-  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryColumn,
@@ -74,5 +73,5 @@ export class Student extends BaseEntity {
     () => SocietyHeadsContributions,
     (contributions) => contributions.studentId,
   )
-  SocietyHeadsContributions: SocietyHeadsContributions;
+  SocietyHeadsContributions: SocietyHeadsContributions[];
 }

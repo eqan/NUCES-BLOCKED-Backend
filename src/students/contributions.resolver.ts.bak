@@ -12,6 +12,7 @@ import { UpdateStudentInput } from './dto/update-student.input';
 import { Student } from './entities/students.entity';
 import { ContributionsService } from './contributions.service';
 import { CreateUpdateContributionInput } from './dto/nestedObjects/create-contribution.input';
+import { GetAllStudents } from './dto/get-all-students.dto';
 
 @Resolver()
 export class ContributionsResolver extends BaseProvider<Student> {
@@ -44,18 +45,19 @@ export class ContributionsResolver extends BaseProvider<Student> {
    * @returns void
    */
   // @UseGuards(JwtAuthGuard)
-  // @Mutation(() => Student, {
-  //   name: 'DeleteStudent',
-  //   nullable: true,
-  //   defaultValue: {},
-  // })
-  // async delete(
-  //   @Args('DeleteStudentInput') deleteStudentInput: DeleteContributionsInput,
-  // ): Promise<void> {
-  //   try {
-  //     return await this.contributionService.delete(deleteStudentInput);
-  //   } catch (error) {}
-  // }
+  @Mutation(() => Student, {
+    name: 'DeleteStudent',
+    nullable: true,
+    defaultValue: {},
+  })
+  async delete(): // @Args('DeleteStudentInput') deleteStudentInput: DeleteContributionsInput,
+  Promise<void> {
+    try {
+      // return await this.contributionService.delete(deleteStudentInput);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
 
   /**
    * Update Student Status
@@ -96,17 +98,18 @@ export class ContributionsResolver extends BaseProvider<Student> {
    * @returns Searched or all students
    */
   // @UseGuards(JwtAuthGuard)
-  // @Query(() => GetAllContributions, {
-  //   name: 'GetAllContributions',
-  // })
-  // async index(
-  //   @Args('filterStudentDto', { nullable: true, defaultValue: {} })
-  //   filterStudentDto: FilterStudentDto,
-  // ): Promise<GetAllContributions> {
-  //   try {
-  //     // return await this.contributionService.index(filterStudentDto);
-  //   } catch (error) {
-  //     throw new BadRequestException(error);
-  //   }
-  // }
+  @Query(() => GetAllStudents, {
+    name: 'GetAllContributions',
+  })
+  async index(
+    @Args('filterStudentDto', { nullable: true, defaultValue: {} })
+    filterStudentDto: FilterStudentDto,
+  ): Promise<GetAllStudents> {
+    try {
+      return { items: [], total: 0 };
+      // return await this.contributionService.index(filterStudentDto);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
 }

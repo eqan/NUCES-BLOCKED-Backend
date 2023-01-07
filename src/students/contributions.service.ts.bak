@@ -22,8 +22,10 @@ export class ContributionsService {
    */
   async createUpdate(createContributionInput: CreateUpdateContributionInput) {
     try {
-      const student = this.contributionsRepo.create(createContributionInput);
-      return this.contributionsRepo.save(student);
+      const contribution = this.contributionsRepo.create(
+        createContributionInput,
+      );
+      return this.contributionsRepo.save(contribution);
     } catch (error) {
       throw new BadRequestException(error);
     }
