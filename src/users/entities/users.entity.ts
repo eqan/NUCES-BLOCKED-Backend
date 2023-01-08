@@ -45,6 +45,24 @@ export class Users extends BaseEntity {
   })
   type: UserTypes;
 
+  // @IsOptional()
+  // @Field({ nullable: true })
+  // @Column({ type: 'text', nullable: true })
+  // adminId: string;
+  // @IsOptional()
+  // @Field(() => AdminEntity, { nullable: true })
+  // @OneToOne(() => AdminEntity, (admin) => admin.id, {
+  //   cascade: true,
+  // })
+  // AdminInformation?: AdminEntity;
+
+  // @IsOptional()
+  // @Field(() => AdminEntity, { nullable: true })
+  // @OneToOne(() => AdminEntity, {
+  //   eager: true,
+  //   cascade: true,
+  // })
+  // AdminInformation?: AdminEntity;
   @IsOptional()
   @Field(() => AdminEntity, { nullable: true })
   @OneToOne(() => AdminEntity, {

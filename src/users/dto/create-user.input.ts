@@ -7,11 +7,11 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'ts-morph';
+import { Type } from 'class-transformer';
 import { UserTypes } from '../entities/enum/user.types.enums';
 import { CreateAdminEntity } from './nestedObjects/admin.entity.dto';
 
-@InputType()
+@InputType('CreateUserInput')
 export class CreateUserInput {
   @IsString({ message: 'Name must be a String' })
   @Field()
@@ -33,6 +33,7 @@ export class CreateUserInput {
 
   @IsOptional()
   @ValidateNested()
+  @Type(() => CreateAdminEntity)
   @Field(() => CreateAdminEntity, { nullable: true })
-  AdminEntity?: CreateAdminEntity;
+  AdminInformation?: CreateAdminEntity;
 }

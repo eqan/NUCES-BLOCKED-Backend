@@ -1,11 +1,6 @@
-import {
-  BadRequestException,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { BadRequestException, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import BaseProvider from 'src/core/base.BaseProvider';
 import { CreateUserInput } from './dto/create-user.input';
 import { DeleteUsersInput } from './dto/delete-users.input';
 import { FilterUserDto } from './dto/filter.users.dto';
@@ -16,11 +11,9 @@ import { UpdateUsersInput } from './dto/update-user.input';
 import { Users } from './entities/users.entity';
 import { UsersService } from './users.service';
 
-@Resolver()
-export class UsersResolver extends BaseProvider<Users> {
-  constructor(private readonly userService: UsersService) {
-    super();
-  }
+@Resolver(() => Users)
+export class UsersResolver {
+  constructor(private readonly userService: UsersService) {}
   /**
    * Login User
    * @param LoggedUserInput: message, signature, address
@@ -73,7 +66,7 @@ export class UsersResolver extends BaseProvider<Users> {
    * @param updateUserStatus
    * @returns Updated User
    */
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Mutation(() => Users, { name: 'UpdateUser' })
   async edit(
     @Args('UpdateUserInput')

@@ -10,12 +10,15 @@ import { LoginUserInput } from './dto/logged-user.input';
 import { UpdateUsersInput } from './dto/update-user.input';
 import { Users } from './entities/users.entity';
 import * as bcrypt from 'bcrypt';
+import { AdminEntity } from './entities/admin.users.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users)
     private usersRepo: Repository<Users>,
+    @InjectRepository(AdminEntity)
+    private adminInfoRepo: Repository<AdminEntity>,
     private authService: AuthService,
   ) {}
 
@@ -39,7 +42,7 @@ export class UsersService {
     } catch (error) {
       if (error.message == SystemErrors.USER_ALREADY_PRESENT)
         throw new BadRequestException(SystemErrors.USER_ALREADY_PRESENT);
-      throw new BadRequestException(SystemErrors.CREATE_USER);
+      throw new BadRequestException(error);
     }
   }
 
@@ -54,9 +57,7 @@ export class UsersService {
       if (!userData) return null;
       return userData;
     } catch (error) {
-      throw new BadRequestException({
-        message: SystemErrors.GET_USER_DATA_BY_ID,
-      });
+      throw new BadRequestException(error);
     }
   }
 
@@ -84,11 +85,16 @@ export class UsersService {
    */
   async update(updateUsersInput: UpdateUsersInput): Promise<Users> {
     try {
-      const { id, ...rest } = updateUsersInput;
-      await this.usersRepo.update({ id }, rest);
-      return this.show(id);
+      const { email, ...rest } = updateUsersInput;
+      // const { walletAddress, userSignature } = rest.AdminInformation;
+      const { id } = await this.show(email);
+      await this.usersRepo.update({ id }, updateUsersInput);
+      // await this.adminInfoRepo.update({ id }, { walletAddress, userSignature });
+      const user = await this.show(id);
+      // delete user.AdminInformation;
+      return user;
     } catch (error) {
-      throw new BadRequestException(SystemErrors.UPDATE_USER);
+      throw new BadRequestException(error);
     }
   }
 
@@ -104,7 +110,7 @@ export class UsersService {
       return null;
     } catch (error) {
       // console.log(error);
-      throw new BadRequestException(SystemErrors.DELETE_USER);
+      throw new BadRequestException(error);
     }
   }
 
@@ -132,7 +138,7 @@ export class UsersService {
       ]);
       return { items, total };
     } catch (error) {
-      throw new BadRequestException(SystemErrors.FIND_USERS);
+      throw new BadRequestException(error);
     }
   }
 }
