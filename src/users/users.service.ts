@@ -85,14 +85,17 @@ export class UsersService {
    */
   async update(updateUsersInput: UpdateUsersInput): Promise<Users> {
     try {
-      const { email, ...rest } = updateUsersInput;
-      // const { walletAddress, userSignature } = rest.AdminInformation;
-      const { id } = await this.show(email);
-      await this.usersRepo.update({ id }, updateUsersInput);
-      // await this.adminInfoRepo.update({ id }, { walletAddress, userSignature });
-      const user = await this.show(id);
-      // delete user.AdminInformation;
-      return user;
+      const { email, AdminInformation, ...rest } = updateUsersInput;
+      const { id } = await this.usersRepo.findOne({ where: { email } });
+      await this.usersRepo.update({ id }, rest);
+      if (AdminInformation) {
+        const adminEntity = await this.adminInfoRepo.findOne({ where: { id } });
+        await this.adminInfoRepo.update(
+          { id: adminEntity.id },
+          AdminInformation,
+        );
+      }
+      return await this.usersRepo.findOne({ where: { id } });
     } catch (error) {
       throw new BadRequestException(error);
     }
