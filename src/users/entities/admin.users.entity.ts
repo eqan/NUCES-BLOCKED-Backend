@@ -18,25 +18,4 @@ export class AdminEntity {
   @Field()
   @Column({ type: 'text', nullable: true })
   userSignature?: string;
-
-  // @Field(() => Users)
-  // @OneToOne(() => Users, (user) => user.id)
-  // @JoinColumn({ name: 'id' })
-  // user: Users;
-
-  // @OneToOne(() => Users, (users) => users.id)
-  // // @JoinColumn({ name: 'id' })
-  // users: Users;
-
-  // @Field(() => Users)
-  // @OneToOne(() => Users, (user) => user.id)
-  // @JoinColumn({ name: 'id' })
-  // user: Users;
-
-  // @BeforeInsert()
-  // setId() {
-  //   if (!this.id) {
-  //     this.id = this.user.id;
-  //   }
-  // }
 }
