@@ -110,6 +110,7 @@ export class UsersService {
     try {
       const ids = deleteWithIds.id;
       await this.usersRepo.delete({ id: In(ids) });
+      await this.adminInfoRepo.delete({ id: In(ids) });
       return null;
     } catch (error) {
       // console.log(error);
