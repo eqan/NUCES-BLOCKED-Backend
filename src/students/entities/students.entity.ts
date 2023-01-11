@@ -10,6 +10,7 @@ import {
   PrimaryColumn,
   Unique,
 } from 'typeorm';
+import { ContributionType } from './enums/contributions.enum';
 import { AdminContributions } from './nestedObjects/admin.contribution.entity';
 import { CareerCounsellorContributions } from './nestedObjects/careercounsellor.contribution.entity';
 import { SocietyHeadsContributions } from './nestedObjects/societyhead.contribution.entity';
@@ -41,6 +42,14 @@ export class Student extends BaseEntity {
   @Field(() => Certificate)
   @OneToOne(() => Certificate, (certificate) => certificate.id)
   certificate: Certificate;
+
+  @Field(() => ContributionType, { nullable: true })
+  @Column({
+    enum: ContributionType,
+    default: null,
+    nullable: true,
+  })
+  contributionType: ContributionType;
 
   @IsOptional()
   @ValidateNested()

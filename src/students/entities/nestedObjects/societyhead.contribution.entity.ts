@@ -1,5 +1,11 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { SocietyHeadsContributionType } from '../enums/societyhead.contribution.enums';
 import { Student } from '../students.entity';
 
@@ -7,10 +13,7 @@ import { Student } from '../students.entity';
 @Entity('SocietyHeadsContributions')
 export abstract class SocietyHeadsContributions {
   @Field()
-  @PrimaryColumn({
-    type: 'varchar',
-    unique: true,
-  })
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Field()
