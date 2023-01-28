@@ -5,22 +5,18 @@
  * It helps to keep track of when a
  * row was created, updated and deleted
  */
-
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Column, CreateDateColumn, Index, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @ObjectType()
 export class Timestamps {
-  @Field(() => String)
-  @CreateDateColumn()
+  @CreateDateColumn({
+    default: () => "CURRENT_TIMESTAMP(6) AT TIME ZONE 'Asia/Karachi'",
+  })
   public createdAt!: Date;
 
-  @Field(() => String)
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    default: () => "CURRENT_TIMESTAMP(6) AT TIME ZONE 'Asia/Karachi'",
+  })
   public updatedAt!: Date;
-
-  @Field(() => String, { nullable: true })
-  @Column({ nullable: true })
-  @Index()
-  public deletedAt?: Date;
 }

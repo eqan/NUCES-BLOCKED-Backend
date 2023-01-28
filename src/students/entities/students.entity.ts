@@ -10,11 +10,10 @@ import {
   PrimaryColumn,
   Unique,
 } from 'typeorm';
-import { ContributionType } from './enums/contributions.enum';
-import { AdminContributions } from './nestedObjects/admin.contribution.entity';
-import { CareerCounsellorContributions } from './nestedObjects/careercounsellor.contribution.entity';
-import { SocietyHeadsContributions } from './nestedObjects/societyhead.contribution.entity';
-import { TeachersContributions } from './nestedObjects/teacher.contribution.entity';
+import { AdminContributions } from '../../contributions/entities/admin.contribution.entity';
+import { CareerCounsellorContributions } from '../../contributions/entities/careercounsellor.contribution.entity';
+import { SocietyHeadsContributions } from '../../contributions/entities/societyhead.contribution.entity';
+import { TeachersContributions } from '../../contributions/entities/teacher.contribution.entity';
 
 /**Create students table in database
  *
@@ -42,14 +41,6 @@ export class Student extends BaseEntity {
   @Field(() => Certificate)
   @OneToOne(() => Certificate, (certificate) => certificate.id)
   certificate: Certificate;
-
-  @Field(() => ContributionType, { nullable: true })
-  @Column({
-    enum: ContributionType,
-    default: null,
-    nullable: true,
-  })
-  contributionType: ContributionType;
 
   @IsOptional()
   @ValidateNested()

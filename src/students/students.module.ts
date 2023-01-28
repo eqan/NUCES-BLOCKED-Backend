@@ -1,10 +1,10 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
-import { AdminContributions } from './entities/nestedObjects/admin.contribution.entity';
-import { CareerCounsellorContributions } from './entities/nestedObjects/careercounsellor.contribution.entity';
-import { SocietyHeadsContributions } from './entities/nestedObjects/societyhead.contribution.entity';
-import { TeachersContributions } from './entities/nestedObjects/teacher.contribution.entity';
+import { AdminContributions } from '../contributions/entities/admin.contribution.entity';
+import { CareerCounsellorContributions } from '../contributions/entities/careercounsellor.contribution.entity';
+import { SocietyHeadsContributions } from '../contributions/entities/societyhead.contribution.entity';
+import { TeachersContributions } from '../contributions/entities/teacher.contribution.entity';
 import { Student } from './entities/students.entity';
 import { StudentsResolver } from './students.resolver';
 import { StudentsService } from './students.service';

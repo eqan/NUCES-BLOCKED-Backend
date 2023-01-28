@@ -1,10 +1,10 @@
 import { registerEnumType } from '@nestjs/graphql';
 
-export enum AdminContributionType {
+export enum AdminContributionEnum {
   CGPA = 'CGPA',
 }
 
-registerEnumType(AdminContributionType, {
+registerEnumType(AdminContributionEnum, {
   name: 'AdminContributionType',
   description: 'Types of admin contributions',
 });
