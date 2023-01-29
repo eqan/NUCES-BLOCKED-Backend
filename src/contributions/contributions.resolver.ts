@@ -7,11 +7,12 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Student } from 'src/students/entities/students.entity';
 import { GetAllStudents } from 'src/students/dto/get-all-students.dto';
-import { ContributionDto, ContributionTypeInput } from './dto/contribution.dto';
-import { FilterStudentDto } from 'src/students/dto/filter.students.dto';
+import { ContributionDto } from './dto/contribution.dto';
 import { ContributionsService } from './contributions.service';
 import { DeleteContributionInput } from './dto/delete-contribution.input';
 import { GetContributionInput } from './dto/get-contribution.input';
+import { FilterAllContributionDto } from './dto/filter-contributions.input';
+import { GetAllContributions } from './dto/get-all-contributions.dto';
 
 @Resolver()
 export class ContributionsResolver {
@@ -35,8 +36,8 @@ export class ContributionsResolver {
   }
 
   /**
-   * Delete Student
-   * @param deleteStudentInput
+   * Delete Contribution
+   * @param deleteContributionInput
    * @returns void
    */
   // @UseGuards(JwtAuthGuard)
@@ -47,19 +48,19 @@ export class ContributionsResolver {
   })
   async delete(
     @Args('DeleteContributionInput')
-    deleteStudentInput: DeleteContributionInput,
+    deleteContributionInput: DeleteContributionInput,
   ): Promise<void> {
     try {
-      return await this.contributionService.delete(deleteStudentInput);
+      return await this.contributionService.delete(deleteContributionInput);
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
   /**
-   * Get Student By address
+   * Get Contribution By address
    * @param id
-   * @returns Student
+   * @returns Contribution
    */
   // @UseGuards(JwtAuthGuard)
   @Query(() => Student, { name: 'GetContribution', nullable: true })
@@ -70,7 +71,6 @@ export class ContributionsResolver {
       const contribution = await this.contributionService.show(
         getContributionInput,
       );
-      console.log(contribution);
       return contribution;
     } catch (error) {
       throw new BadRequestException(error);
@@ -79,20 +79,23 @@ export class ContributionsResolver {
 
   /**
    * Get ALl Contributions
-   * @param filterStudentDto
-   * @returns Searched or all students
+   * @param filterContributionsDto
+   * @returns Searched or all Contribution
    */
   // @UseGuards(JwtAuthGuard)
-  @Query(() => GetAllStudents, {
+  @Query(() => GetAllContributions, {
     name: 'GetAllContributions',
   })
   async index(
-    @Args('filterStudentDto', { nullable: true, defaultValue: {} })
-    filterStudentDto: FilterStudentDto,
-  ): Promise<GetAllStudents> {
+    @Args('FilterContributionsDto', { nullable: true, defaultValue: {} })
+    filterContributionsDto: FilterAllContributionDto,
+  ): Promise<GetAllContributions> {
     try {
-      return { items: [], total: 0 };
-      // return await this.contributionService.index(filterStudentDto);
+      const contribution = await this.contributionService.index(
+        filterContributionsDto,
+      );
+      // console.log(contribution);
+      return contribution;
     } catch (error) {
       throw new BadRequestException(error);
     }

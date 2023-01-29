@@ -12,9 +12,11 @@ import { SocietyHeadsContributions } from 'src/contributions/entities/societyhea
 import { TeachersContributions } from 'src/contributions/entities/teacher.contribution.entity';
 import { Student } from 'src/students/entities/students.entity';
 import { Repository } from 'typeorm';
-import { ContributionDto } from './dto/contribution.dto';
+import { ContributionDto, ContributionInput } from './dto/contribution.dto';
 import { DeleteContributionInput } from './dto/delete-contribution.input';
 import { GetContributionInput } from './dto/get-contribution.input';
+import { GetAllContributions } from './dto/get-all-contributions.dto';
+import { FilterAllContributionDto } from './dto/filter-contributions.input';
 
 @Injectable()
 export class ContributionsService {
@@ -116,7 +118,7 @@ export class ContributionsService {
       }
       return studentInfo;
     } catch (error) {
-      throw new BadRequestException(error);
+      throw new NotFoundException(error);
     }
   }
 
@@ -156,26 +158,82 @@ export class ContributionsService {
    * @@params No Params
    * @returns Array of Contributions and Total Number of Contributions
    */
-  // async index(filterDto: FilterContributionDto): Promise<GetAllContributions> {
-  //   try {
-  //     const { page = 1, limit = 20, ...rest } = filterDto;
-  //     const [items, total] = await Promise.all([
-  //       this.contributionsRepo.find({
-  //         where: {
-  //           id: rest?.id,
-  //         },
-  //         skip: (page - 1) * limit || 0,
-  //         take: limit || 10,
-  //       }),
-  //       this.contributionsRepo.count({
-  //         where: {
-  //           id: rest.id,
-  //         },
-  //       }),
-  //     ]);
-  //     return { items, total };
-  //   } catch (error) {
-  //     throw new BadRequestException(error);
-  //   }
-  // }
+  async index(
+    filterDto: FilterAllContributionDto,
+  ): Promise<GetAllContributions> {
+    try {
+      const { page = 1, limit = 20, ...rest } = filterDto;
+      let [items, total]: [any, number] = [null, 0];
+      switch (rest.contributionType) {
+        case ContributionTypeEnum.ADMIN:
+          [items, total] = await Promise.all([
+            this.adminRepo.find({
+              where: {
+                id: rest.studentId,
+              },
+              skip: (page - 1) * limit || 0,
+              take: limit || 10,
+            }),
+            this.adminRepo.count({
+              where: {
+                id: rest.studentId,
+              },
+            }),
+          ]);
+          return { adminContributions: items, total };
+        case ContributionTypeEnum.SOCIETY_HEAD:
+          [items, total] = await Promise.all([
+            this.societyRepo.find({
+              where: {
+                studentId: rest.studentId,
+              },
+              skip: (page - 1) * limit || 0,
+              take: limit || 10,
+            }),
+            this.societyRepo.count({
+              where: {
+                studentId: rest.studentId,
+              },
+            }),
+          ]);
+          return { societyHeadsContributions: items, total };
+        case ContributionTypeEnum.CAREER_COUNSELLOR:
+          [items, total] = await Promise.all([
+            this.counsellorRepo.find({
+              where: {
+                studentId: rest.studentId,
+              },
+              skip: (page - 1) * limit || 0,
+              take: limit || 10,
+            }),
+            this.counsellorRepo.count({
+              where: {
+                studentId: rest.studentId,
+              },
+            }),
+          ]);
+          return { careerCounsellorContributions: items, total };
+        case ContributionTypeEnum.TEACHER:
+          [items, total] = await Promise.all([
+            this.teachersRepo.find({
+              where: {
+                studentId: rest.studentId,
+              },
+              skip: (page - 1) * limit || 0,
+              take: limit || 10,
+            }),
+            this.teachersRepo.count({
+              where: {
+                studentId: rest.studentId,
+              },
+            }),
+          ]);
+          return { teachersContribution: items, total };
+        default:
+          return { adminContributions: [], total: 0 };
+      }
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
 }

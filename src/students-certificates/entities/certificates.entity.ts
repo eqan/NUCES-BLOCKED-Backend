@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Timestamps } from 'src/core/embed/timestamps.embed';
 import { Student } from 'src/students/entities/students.entity';
 import {
   BeforeInsert,
@@ -14,14 +15,10 @@ import {
 @ObjectType()
 @Entity('Certificate')
 @Unique(['id'])
-export class Certificate {
+export class Certificate extends Timestamps {
   @Field()
   @PrimaryColumn({ type: 'text' })
   id: string;
-
-  @Field()
-  @CreateDateColumn()
-  date: Date;
 
   @Field()
   @Column({ unique: true })
@@ -36,13 +33,6 @@ export class Certificate {
   setId() {
     if (!this.id) {
       this.id = this.student.id;
-    }
-  }
-
-  @BeforeInsert()
-  setDate() {
-    if (!this.date) {
-      this.date = new Date();
     }
   }
 }
