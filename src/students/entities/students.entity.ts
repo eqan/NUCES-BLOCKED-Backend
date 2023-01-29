@@ -50,7 +50,7 @@ export class Student extends BaseEntity {
 
   @IsOptional()
   @ValidateNested()
-  @Field(() => CareerCounsellorContributions, { nullable: true })
+  @Field(() => [CareerCounsellorContributions], { nullable: true })
   @OneToMany(
     () => CareerCounsellorContributions,
     (contributions) => contributions.studentId,
@@ -59,7 +59,7 @@ export class Student extends BaseEntity {
 
   @IsOptional()
   @ValidateNested()
-  @Field(() => TeachersContributions, { nullable: true })
+  @Field(() => [TeachersContributions], { nullable: true })
   @OneToMany(
     () => TeachersContributions,
     (contributions) => contributions.studentId,
@@ -68,7 +68,7 @@ export class Student extends BaseEntity {
 
   @IsOptional()
   @ValidateNested()
-  @Field(() => SocietyHeadsContributions, { nullable: true })
+  @Field(() => [SocietyHeadsContributions], { nullable: true })
   @OneToMany(
     () => SocietyHeadsContributions,
     (contributions) => contributions.studentId,

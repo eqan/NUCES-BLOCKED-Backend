@@ -14,7 +14,7 @@ export class AdminContribution {
     defaultValue: ContributionTypeEnum.ADMIN,
   })
   @Type(() => () => ContributionTypeEnum.ADMIN)
-  readonly assetClass: ContributionTypeEnum.ADMIN;
+  readonly contributionType: ContributionTypeEnum.ADMIN;
 
   @Field(() => AdminContributionEnum, {
     defaultValue: AdminContributionEnum.CGPA,
@@ -30,7 +30,7 @@ export class CareerCounsellorContribution {
     defaultValue: ContributionTypeEnum.CAREER_COUNSELLOR,
   })
   @Type(() => () => ContributionTypeEnum.CAREER_COUNSELLOR)
-  readonly assetClass: ContributionTypeEnum.CAREER_COUNSELLOR;
+  readonly contributionType: ContributionTypeEnum.CAREER_COUNSELLOR;
 
   @Field(() => CareerCounsellorContributionEnum)
   @Type(() => () => CareerCounsellorContributionEnum)
@@ -44,7 +44,7 @@ export class SocietyHeadContribution {
     defaultValue: ContributionTypeEnum.SOCIETY_HEAD,
   })
   @Type(() => () => ContributionTypeEnum.SOCIETY_HEAD)
-  readonly assetClass: ContributionTypeEnum.SOCIETY_HEAD;
+  readonly contributionType: ContributionTypeEnum.SOCIETY_HEAD;
 
   @Field(() => SocietyHeadContributionEnum)
   @Type(() => () => SocietyHeadContributionEnum)
@@ -58,7 +58,7 @@ export class TeacherContribution {
     defaultValue: ContributionTypeEnum.TEACHER,
   })
   @Type(() => () => ContributionTypeEnum.TEACHER)
-  readonly assetClass: ContributionTypeEnum.TEACHER;
+  readonly contributionType: ContributionTypeEnum.TEACHER;
 
   @Field(() => TeacherContributionEnum)
   @Type(() => () => TeacherContributionEnum)
@@ -77,13 +77,13 @@ export class ContributionTypeInput {
   type: ContributionTypeEnum;
 
   @Field(() => ContributionTypeEnum)
-  assetClass: ContributionTypeEnum;
+  contributionType: ContributionTypeEnum;
 
   @Field(() => TeacherContributionEnum, {
     nullable: true,
   })
   @Type(() => () => TeacherContributionEnum)
-  teacherContribution?: TeacherContributionEnum;
+  teacherContributionType?: TeacherContributionEnum;
 
   @Field(() => SocietyHeadContributionEnum, {
     nullable: true,
@@ -126,7 +126,7 @@ export class ContributionDto {
       ],
     },
   })
-  assetType: ContributionTypeInput;
+  contributionType: ContributionTypeInput;
 
   @Field()
   @IsString()

@@ -7,9 +7,11 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Student } from 'src/students/entities/students.entity';
 import { GetAllStudents } from 'src/students/dto/get-all-students.dto';
-import { ContributionDto } from './dto/contribution.dto';
+import { ContributionDto, ContributionTypeInput } from './dto/contribution.dto';
 import { FilterStudentDto } from 'src/students/dto/filter.students.dto';
 import { ContributionsService } from './contributions.service';
+import { DeleteContributionInput } from './dto/delete-contribution.input';
+import { GetContributionInput } from './dto/get-contribution.input';
 
 @Resolver()
 export class ContributionsResolver {
@@ -39,14 +41,16 @@ export class ContributionsResolver {
    */
   // @UseGuards(JwtAuthGuard)
   @Mutation(() => Student, {
-    name: 'DeleteStudent',
+    name: 'DeleteContribution',
     nullable: true,
     defaultValue: {},
   })
-  async delete(): // @Args('DeleteStudentInput') deleteStudentInput: DeleteContributionsInput,
-  Promise<void> {
+  async delete(
+    @Args('DeleteContributionInput')
+    deleteStudentInput: DeleteContributionInput,
+  ): Promise<void> {
     try {
-      // return await this.contributionService.delete(deleteStudentInput);
+      return await this.contributionService.delete(deleteStudentInput);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -58,10 +62,16 @@ export class ContributionsResolver {
    * @returns Student
    */
   // @UseGuards(JwtAuthGuard)
-  @Query(() => Student, { name: 'GetStudentDataByUserId', nullable: true })
-  async show(@Args('studentId') id: string): Promise<Student> {
+  @Query(() => Student, { name: 'GetContribution', nullable: true })
+  async show(
+    @Args('GetContributionInput') getContributionInput: GetContributionInput,
+  ): Promise<Student> {
     try {
-      return await this.contributionService.show(id);
+      const contribution = await this.contributionService.show(
+        getContributionInput,
+      );
+      console.log(contribution);
+      return contribution;
     } catch (error) {
       throw new BadRequestException(error);
     }
