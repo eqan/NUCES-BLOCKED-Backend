@@ -10,10 +10,10 @@ import {
   PrimaryColumn,
   Unique,
 } from 'typeorm';
-import { AdminContributions } from './nestedObjects/admin.contribution.entity';
-import { CareerCounsellorContributions } from './nestedObjects/careercounsellor.contribution.entity';
-import { SocietyHeadsContributions } from './nestedObjects/societyhead.contribution.entity';
-import { TeachersContributions } from './nestedObjects/teacher.contribution.entity';
+import { AdminContributions } from '../../contributions/entities/admin.contribution.entity';
+import { CareerCounsellorContributions } from '../../contributions/entities/careercounsellor.contribution.entity';
+import { SocietyHeadsContributions } from '../../contributions/entities/societyhead.contribution.entity';
+import { TeachersContributions } from '../../contributions/entities/teacher.contribution.entity';
 
 /**Create students table in database
  *
@@ -50,7 +50,7 @@ export class Student extends BaseEntity {
 
   @IsOptional()
   @ValidateNested()
-  @Field(() => CareerCounsellorContributions, { nullable: true })
+  @Field(() => [CareerCounsellorContributions], { nullable: true })
   @OneToMany(
     () => CareerCounsellorContributions,
     (contributions) => contributions.studentId,
@@ -59,7 +59,7 @@ export class Student extends BaseEntity {
 
   @IsOptional()
   @ValidateNested()
-  @Field(() => TeachersContributions, { nullable: true })
+  @Field(() => [TeachersContributions], { nullable: true })
   @OneToMany(
     () => TeachersContributions,
     (contributions) => contributions.studentId,
@@ -68,7 +68,7 @@ export class Student extends BaseEntity {
 
   @IsOptional()
   @ValidateNested()
-  @Field(() => SocietyHeadsContributions, { nullable: true })
+  @Field(() => [SocietyHeadsContributions], { nullable: true })
   @OneToMany(
     () => SocietyHeadsContributions,
     (contributions) => contributions.studentId,
