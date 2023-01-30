@@ -98,7 +98,7 @@ export class CertificatessResolver extends BaseProvider<Certificate> {
     name: 'GetAllCertificates',
   })
   async index(
-    @Args('FilterCertificateInput', { nullable: true })
+    @Args('FilterCertificateInput', { nullable: true, defaultValue: {} })
     filterCertificateDto: FilterCertificateInput,
   ): Promise<GetAllCertificates> {
     try {

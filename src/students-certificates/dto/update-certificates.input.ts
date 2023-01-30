@@ -17,9 +17,4 @@ export class UpdateCertificatesInput {
   @IsString()
   @Field({ nullable: true })
   url: string;
-
-  @IsOptional()
-  @IsDate()
-  @Field({ nullable: true })
-  date: Date;
 }
