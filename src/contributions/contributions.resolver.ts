@@ -1,12 +1,7 @@
-import {
-  BadRequestException,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { BadRequestException, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Student } from 'src/students/entities/students.entity';
-import { GetAllStudents } from 'src/students/dto/get-all-students.dto';
 import { ContributionDto } from './dto/contribution.dto';
 import { ContributionsService } from './contributions.service';
 import { DeleteContributionInput } from './dto/delete-contribution.input';
@@ -22,7 +17,7 @@ export class ContributionsResolver {
    * @param contributionDto
    * @returns Contributions
    */
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Student, { name: 'CreateUpdateContribution' })
   async create(
     @Args('CreateUpdateStudentInput')

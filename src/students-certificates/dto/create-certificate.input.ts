@@ -7,11 +7,6 @@ export class CreateCertificateDto {
   @Field()
   readonly id: string;
 
-  @IsOptional()
-  @IsDate()
-  @Field({ nullable: true })
-  readonly date: Date;
-
   @IsString()
   @Field()
   readonly url: string;

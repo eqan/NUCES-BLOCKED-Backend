@@ -7,6 +7,7 @@ import { response } from 'express';
 import { join } from 'path';
 import { typeOrmConfigAsync } from './config/typeorm.config';
 import { ContributionsModule } from './contributions/contributions.module';
+import { ResultsModule } from './results/results.module';
 import { CertificatesModule } from './students-certificates/certificates.module';
 import { StudentsModule } from './students/students.module';
 import { UsersModule } from './users/users.module';
@@ -44,6 +45,7 @@ import { UsersModule } from './users/users.module';
     StudentsModule,
     CertificatesModule,
     ContributionsModule,
+    ResultsModule
   ],
 })
 export class AppModule {}
