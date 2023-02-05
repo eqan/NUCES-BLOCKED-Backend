@@ -7,17 +7,27 @@ import { RedisService } from 'nestjs-redis';
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { CronJob } from 'cron';
+import * as fs from 'fs';
+import { semesterStoreAddress } from 'src/contracts/deployedAddresses';
 
 @Injectable()
 export class SemesterCron {
   private readonly logger = new Logger(SemesterCron.name);
+  private semesterABI: any;
 
   constructor(
     private readonly schedulerRegistry: SchedulerRegistry,
     @InjectRepository(SemesterResult)
     private readonly semesterRepository: Repository<SemesterResult>,
     private readonly redisService: RedisService,
-  ) {}
+  ) {
+    this.semesterABI = JSON.parse(
+      fs.readFileSync(
+        '../contracts/SemesterResult.sol/SemesterStore.json',
+        'utf-8',
+      ),
+    );
+  }
 
   async startCron() {
     const redisClient = this.redisService.getClient();
@@ -36,8 +46,8 @@ export class SemesterCron {
 
       const provider = new JsonRpcProvider(process.env.RPC_URL);
       const contract = new Contract(
-        process.env.CONTRACT_ADDRESS,
-        JSON.parse(process.env.ABI),
+        semesterStoreAddress,
+        this.semesterABI,
         provider,
       );
 
