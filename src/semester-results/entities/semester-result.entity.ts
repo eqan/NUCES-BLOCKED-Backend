@@ -5,9 +5,9 @@ import { Column, Entity, PrimaryColumn, Unique } from 'typeorm';
 import { SemesterTypesEnum } from './enums/semester-types.enums';
 
 @ObjectType()
-@Entity('Result')
+@Entity('SemesterResult')
 @Unique(['id', 'url'])
-export class Result extends Timestamps {
+export class SemesterResult extends Timestamps {
   @Field()
   @PrimaryColumn({
     type: 'text',

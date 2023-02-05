@@ -1,10 +1,10 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Result } from '../entities/results.entity';
+import { SemesterResult } from '../entities/semester-result.entity';
 
 @ObjectType('GetAllResults')
 export class GetAllResults {
-  @Field(() => [Result])
-  items: Result[];
+  @Field(() => [SemesterResult])
+  items: SemesterResult[];
 
   @Field(() => Int)
   total: number;

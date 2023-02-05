@@ -2,17 +2,17 @@ import { BadRequestException } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import BaseProvider from 'src/core/base.BaseProvider';
-import { CreateResultDto } from './dto/create-result.input';
-import { DeleteResultsInput } from './dto/delete-result.input';
-import { FilterResultInput } from './dto/filter.result.dto';
-import { GetAllResults } from './dto/get-all-results.dto';
-import { UpdateResultsInput } from './dto/update-result.input';
-import { Result } from './entities/results.entity';
-import { ResultsService } from './results.service';
+import { CreateResultDto } from './dto/create-semester-result.input';
+import { DeleteResultsInput } from './dto/delete-semester-result.input';
+import { FilterResultInput } from './dto/filter.semester-result.dto';
+import { GetAllResults } from './dto/get-all-semester-results.dto';
+import { UpdateResultsInput } from './dto/update-semester-result.input';
+import { SemesterResult } from './entities/semester-result.entity';
+import { SemesterResultService } from './semester-result.service';
 
 @Resolver()
-export class ResultsResolver extends BaseProvider<Result> {
-  constructor(private readonly resultService: ResultsService) {
+export class SemesterResultResolver extends BaseProvider<SemesterResult> {
+  constructor(private readonly resultService: SemesterResultService) {
     super();
   }
   /**
@@ -21,11 +21,11 @@ export class ResultsResolver extends BaseProvider<Result> {
    * @returns Results
    */
   // @UseGuards(JwtAuthGuard)
-  @Mutation(() => Result, { name: 'CreateResult' })
+  @Mutation(() => SemesterResult, { name: 'CreateResult' })
   async create(
     @Args('CreateResultInput')
     createResultInput: CreateResultDto,
-  ): Promise<Result> {
+  ): Promise<SemesterResult> {
     try {
       return await this.resultService.create(createResultInput);
     } catch (error) {
@@ -39,7 +39,7 @@ export class ResultsResolver extends BaseProvider<Result> {
    * @returns void
    */
   // @UseGuards(JwtAuthGuard)
-  @Mutation(() => Result, { name: 'DeleteResult', nullable: true })
+  @Mutation(() => SemesterResult, { name: 'DeleteResult', nullable: true })
   async delete(
     @Args('DeleteResultInput')
     deleteResultInput: DeleteResultsInput,
@@ -58,11 +58,11 @@ export class ResultsResolver extends BaseProvider<Result> {
    * @returns Updated Result
    */
   // @UseGuards(JwtAuthGuard)
-  @Mutation(() => Result, { name: 'UpdateResult' })
+  @Mutation(() => SemesterResult, { name: 'UpdateResult' })
   async edit(
     @Args('UpdateResultInput')
     updateResultStatus: UpdateResultsInput,
-  ): Promise<Result> {
+  ): Promise<SemesterResult> {
     try {
       return await this.resultService.update(updateResultStatus);
     } catch (error) {
@@ -76,11 +76,11 @@ export class ResultsResolver extends BaseProvider<Result> {
    * @returns Result
    */
   // @UseGuards(JwtAuthGuard)
-  @Query(() => Result, {
+  @Query(() => SemesterResult, {
     name: 'GetResult',
     nullable: true,
   })
-  async show(@Args('id') id: string): Promise<Result> {
+  async show(@Args('id') id: string): Promise<SemesterResult> {
     try {
       return await this.resultService.show(id);
     } catch (error) {

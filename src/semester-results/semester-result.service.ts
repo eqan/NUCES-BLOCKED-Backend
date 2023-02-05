@@ -1,17 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FilterResultInput } from './dto/filter.result.dto';
+import { FilterResultInput } from './dto/filter.semester-result.dto';
 import { In, Repository } from 'typeorm';
-import { CreateResultDto } from './dto/create-result.input';
-import { GetAllResults } from './dto/get-all-results.dto';
-import { UpdateResultsInput } from './dto/update-result.input';
-import { Result } from './entities/results.entity';
+import { CreateResultDto } from './dto/create-semester-result.input';
+import { GetAllResults } from './dto/get-all-semester-results.dto';
+import { UpdateResultsInput } from './dto/update-semester-result.input';
+import { SemesterResult } from './entities/semester-result.entity';
 
 @Injectable()
-export class ResultsService {
+export class SemesterResultService {
   constructor(
-    @InjectRepository(Result)
-    private resultRepo: Repository<Result>,
+    @InjectRepository(SemesterResult)
+    private resultRepo: Repository<SemesterResult>,
   ) {}
 
   /**
@@ -19,7 +19,7 @@ export class ResultsService {
    * @params createUse
    * @return Results
    */
-  async create(createResultInput: CreateResultDto): Promise<Result> {
+  async create(createResultInput: CreateResultDto): Promise<SemesterResult> {
     try {
       const { type, year, url } = createResultInput;
       const id = type + '_' + year;
@@ -35,7 +35,7 @@ export class ResultsService {
    * @param email
    * @returns userData
    */
-  async show(id: string): Promise<Result> {
+  async show(id: string): Promise<SemesterResult> {
     try {
       const resultData = await this.resultRepo.findOneBy({ id });
       if (!resultData) return null;
@@ -50,7 +50,9 @@ export class ResultsService {
    * @param updateResultsInput
    * @returns updated user
    */
-  async update(updateResultsInput: UpdateResultsInput): Promise<Result> {
+  async update(
+    updateResultsInput: UpdateResultsInput,
+  ): Promise<SemesterResult> {
     try {
       const { id, url } = updateResultsInput;
       await this.resultRepo.update({ id }, { url });
