@@ -5,7 +5,6 @@ import { RedisModule, RedisService } from 'nestjs-redis';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
 import { SemesterResult } from './entities/semester-result.entity';
-import { SemesterCron } from './semester-result-cron.service';
 import { SemesterResultResolver } from './semester-result.resolver';
 import { SemesterResultService } from './semester-result.service';
 
@@ -14,14 +13,7 @@ import { SemesterResultService } from './semester-result.service';
     TypeOrmModule.forFeature([SemesterResult]),
     forwardRef(() => AuthModule),
   ],
-  providers: [
-    SemesterResultResolver,
-    SchedulerRegistry,
-    RedisService,
-    SemesterCron,
-    SemesterResultService,
-    AuthService,
-  ],
+  providers: [SemesterResultResolver, SemesterResultService, AuthService],
   exports: [SemesterResultService],
 })
 export class SemesterResultModule {}
