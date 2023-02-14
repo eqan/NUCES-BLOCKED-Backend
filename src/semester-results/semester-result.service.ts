@@ -9,10 +9,223 @@ import { SemesterResult } from './entities/semester-result.entity';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
-import { semesterStoreAddress } from 'src/contracts/deployedAddresses';
+import { DeployedContracts } from 'src/contracts/deployedAddresses';
 import Redis from 'ioredis';
 import { ConfigService } from '@nestjs/config';
-import ABI from '../contracts/SemesterStore.json';
+import { BigNumber } from '@ethersproject/bignumber';
+
+const ABI = [
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'OwnershipTransferred',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'operation',
+        type: 'string',
+      },
+    ],
+    name: 'SemesterOperation',
+    type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'semesterType',
+        type: 'string',
+      },
+      {
+        internalType: 'uint256',
+        name: 'year',
+        type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: 'url',
+        type: 'string',
+      },
+    ],
+    name: 'addSemester',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'from',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'to',
+        type: 'uint256',
+      },
+    ],
+    name: 'getAllSemestersWithPagination',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'string',
+            name: 'semesterType',
+            type: 'string',
+          },
+          {
+            internalType: 'uint256',
+            name: 'year',
+            type: 'uint256',
+          },
+          {
+            internalType: 'string',
+            name: 'url',
+            type: 'string',
+          },
+        ],
+        internalType: 'struct SemesterStore.Semester[]',
+        name: '',
+        type: 'tuple[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'id',
+        type: 'string',
+      },
+    ],
+    name: 'getSemester',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getSemesterCount',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'owner',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'id',
+        type: 'string',
+      },
+    ],
+    name: 'removeSemester',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'id',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'url',
+        type: 'string',
+      },
+    ],
+    name: 'updateSemester',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+];
 
 @Injectable()
 export class SemesterResultService {
@@ -28,37 +241,61 @@ export class SemesterResultService {
 
   @Cron('*/30 * * * * *')
   async dataFetchingFromBlockchain() {
-    console.log(ABI);
-    let from = Number(await this.redis.get('paginationFrom')) || 0;
-    let to = Number(await this.redis.get('paginationTo')) || 90000;
-    if (!from) {
-      from = 0;
-      await this.redis.set('paginationFrom', from);
-    }
-    if (!to) {
-      to = 9;
-      await this.redis.set('paginationTo', to);
-    }
+    // console.log(ABI);
+    try {
+      let fromSemesterIndex = 0;
+      let toSemesterIndex = 2;
+      console.log(fromSemesterIndex);
+      console.log(toSemesterIndex);
+      if (!fromSemesterIndex) {
+        fromSemesterIndex = 0;
+        await this.redis.set('paginationFrom', fromSemesterIndex);
+      }
+      if (!toSemesterIndex) {
+        toSemesterIndex = 9;
+        await this.redis.set('paginationTo', toSemesterIndex);
+      }
 
-    const provider = new JsonRpcProvider(process.env.RPC_URL);
-    const contract = new Contract(semesterStoreAddress, ABI, provider);
+      const provider = new JsonRpcProvider(process.env.RPC_URL);
+      const contract = new Contract(
+        DeployedContracts.SemesterStore,
+        ABI,
+        provider,
+      );
 
-    const semesters = await contract.functions.getAllSemestersWithPagination(
-      from,
-      to,
-    );
-    for (const semester of semesters) {
-      await this.semesterRepo.save(semester);
-    }
-    if (semesters.length === 0) {
-      this.logger.debug('No more semesters to fetch');
-      this.schedulerRegistry.deleteCronJob('*/30 * * * * *');
-    } else {
-      this.logger.debug(`Fetched ${semesters.length} semesters`);
-      from = to + 1;
-      to = to + 10;
-      await this.redis.set('paginationFrom', from);
-      await this.redis.set('paginationTo', to);
+      const semesters = await contract.functions.getAllSemestersWithPagination(
+        fromSemesterIndex,
+        toSemesterIndex,
+        { from: process.env.CONTRACT_OWNER },
+      );
+      for (const semester of semesters[0]) {
+        const data = {
+          id: semester['semesterType'] + '_' + semester['year'].toNumber(),
+          url: semester['url'],
+          type: semester['semesterType'],
+          year: semester['year'].toNumber(),
+        };
+        console.log(data);
+        try {
+          if (data.year != 0) {
+            await this.semesterRepo.save(data);
+          }
+        } catch (error) {
+          this.logger.error('Duplicate Data Found!');
+        }
+      }
+      if (semesters.length === 0) {
+        this.logger.debug('No more semesters to fetch');
+        this.schedulerRegistry.deleteCronJob('*/30 * * * * *');
+      } else {
+        this.logger.debug(`Fetched ${semesters.length} semesters`);
+        fromSemesterIndex = toSemesterIndex + 1;
+        toSemesterIndex = toSemesterIndex + 10;
+        await this.redis.set('paginationFrom', fromSemesterIndex);
+        await this.redis.set('paginationTo', toSemesterIndex);
+      }
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 
