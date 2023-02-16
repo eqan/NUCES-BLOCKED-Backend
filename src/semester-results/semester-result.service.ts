@@ -6,12 +6,10 @@ import { CreateResultDto } from './dto/create-semester-result.input';
 import { GetAllResults } from './dto/get-all-semester-results.dto';
 import { UpdateResultsInput } from './dto/update-semester-result.input';
 import { SemesterResult } from './entities/semester-result.entity';
-import { Cron, SchedulerRegistry } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
 import { DeployedContracts } from 'src/contracts/deployedAddresses';
-import Redis from 'ioredis';
-import { ConfigService } from '@nestjs/config';
 
 const ABI = [
   {
@@ -229,15 +227,13 @@ const ABI = [
 @Injectable()
 export class SemesterResultService {
   private readonly logger = new Logger('Semester-DataFetch-Cron');
-  redis = new Redis(this.config.get('REDIS_URL'));
 
   constructor(
-    private readonly schedulerRegistry: SchedulerRegistry,
     @InjectRepository(SemesterResult)
     private semesterRepo: Repository<SemesterResult>,
-    private readonly config: ConfigService,
   ) {}
 
+  // Cron job implementation for automatically retrieving and storing data from blockchain into db
   @Cron('*/30 * * * * *')
   async dataFetchingFromBlockchain() {
     try {
@@ -258,7 +254,6 @@ export class SemesterResultService {
         let toSemesterIndex = dataCountLocal + CHUNK_SIZE;
         if (toSemesterIndex > dataCountBlockchain)
           toSemesterIndex = dataCountBlockchain;
-        console.log('Data Fetched!');
         const semesters =
           await contract.functions.getAllSemestersWithPagination(
             fromSemesterIndex,
