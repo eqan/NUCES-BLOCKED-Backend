@@ -12,7 +12,6 @@ import { Contract } from '@ethersproject/contracts';
 import { DeployedContracts } from 'src/contracts/deployedAddresses';
 import Redis from 'ioredis';
 import { ConfigService } from '@nestjs/config';
-import { BigNumber } from '@ethersproject/bignumber';
 
 const ABI = [
   {
@@ -241,21 +240,7 @@ export class SemesterResultService {
 
   @Cron('*/30 * * * * *')
   async dataFetchingFromBlockchain() {
-    // console.log(ABI);
     try {
-      let fromSemesterIndex = 0;
-      let toSemesterIndex = 2;
-      console.log(fromSemesterIndex);
-      console.log(toSemesterIndex);
-      if (!fromSemesterIndex) {
-        fromSemesterIndex = 0;
-        await this.redis.set('paginationFrom', fromSemesterIndex);
-      }
-      if (!toSemesterIndex) {
-        toSemesterIndex = 9;
-        await this.redis.set('paginationTo', toSemesterIndex);
-      }
-
       const provider = new JsonRpcProvider(process.env.RPC_URL);
       const contract = new Contract(
         DeployedContracts.SemesterStore,
@@ -263,36 +248,44 @@ export class SemesterResultService {
         provider,
       );
 
-      const semesters = await contract.functions.getAllSemestersWithPagination(
-        fromSemesterIndex,
-        toSemesterIndex,
-        { from: process.env.CONTRACT_OWNER },
-      );
-      for (const semester of semesters[0]) {
-        const data = {
-          id: semester['semesterType'] + '_' + semester['year'].toNumber(),
-          url: semester['url'],
-          type: semester['semesterType'],
-          year: semester['year'].toNumber(),
-        };
-        console.log(data);
-        try {
-          if (data.year != 0) {
-            await this.semesterRepo.save(data);
+      const dataCountLocal = await this.semesterRepo.count();
+      const dataCountBlockchain = (
+        await contract.functions.getSemesterCount()
+      )[0].toNumber();
+      if (dataCountLocal != dataCountBlockchain) {
+        const CHUNK_SIZE = 10;
+        const fromSemesterIndex = Math.max(0, dataCountLocal - CHUNK_SIZE);
+        let toSemesterIndex = dataCountLocal + CHUNK_SIZE;
+        if (toSemesterIndex > dataCountBlockchain)
+          toSemesterIndex = dataCountBlockchain;
+        console.log('Data Fetched!');
+        const semesters =
+          await contract.functions.getAllSemestersWithPagination(
+            fromSemesterIndex,
+            toSemesterIndex,
+            { from: process.env.CONTRACT_OWNER },
+          );
+        for (const semester of semesters[0]) {
+          const data = {
+            id: semester['semesterType'] + '_' + semester['year'].toNumber(),
+            url: semester['url'],
+            type: semester['semesterType'],
+            year: semester['year'].toNumber(),
+          };
+          console.log(data);
+          try {
+            if (data.year != 0) {
+              await this.semesterRepo.save(data);
+            }
+          } catch (error) {
+            this.logger.error('Duplicate Data Found!');
           }
-        } catch (error) {
-          this.logger.error('Duplicate Data Found!');
         }
-      }
-      if (semesters.length === 0) {
-        this.logger.debug('No more semesters to fetch');
-        this.schedulerRegistry.deleteCronJob('*/30 * * * * *');
+        this.logger.verbose(
+          `Fetched ${toSemesterIndex - fromSemesterIndex} semesters`,
+        );
       } else {
-        this.logger.debug(`Fetched ${semesters.length} semesters`);
-        fromSemesterIndex = toSemesterIndex + 1;
-        toSemesterIndex = toSemesterIndex + 10;
-        await this.redis.set('paginationFrom', fromSemesterIndex);
-        await this.redis.set('paginationTo', toSemesterIndex);
+        this.logger.log('No more semesters to fetch!');
       }
     } catch (error) {
       this.logger.error(error);
