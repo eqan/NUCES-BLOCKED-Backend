@@ -17,7 +17,7 @@ export class ContributionsResolver {
    * @param contributionDto
    * @returns Contributions
    */
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Mutation(() => Student, { name: 'CreateUpdateContribution' })
   async create(
     @Args('CreateUpdateStudentInput')

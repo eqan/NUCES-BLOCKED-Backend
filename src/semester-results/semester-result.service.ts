@@ -1,31 +1,17 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FilterCertificateInput } from './dto/filter.certificates.dto';
+import { FilterResultInput } from './dto/filter.semester-result.dto';
 import { In, Repository } from 'typeorm';
-import { CreateCertificateDto } from './dto/create-certificate.input';
-import { GetAllCertificates } from './dto/get-all-certificates.dto';
-import { UpdateCertificatesInput } from './dto/update-certificates.input';
-import { Certificate } from './entities/certificates.entity';
+import { CreateResultDto } from './dto/create-semester-result.input';
+import { GetAllResults } from './dto/get-all-semester-results.dto';
+import { UpdateResultsInput } from './dto/update-semester-result.input';
+import { SemesterResult } from './entities/semester-result.entity';
 import { Cron } from '@nestjs/schedule';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
 import { DeployedContracts } from 'src/contracts/deployedAddresses';
-import { Student } from 'src/students/entities/students.entity';
 
 const ABI = [
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'string',
-        name: 'operation',
-        type: 'string',
-      },
-    ],
-    name: 'CertificateOperation',
-    type: 'event',
-  },
   {
     anonymous: false,
     inputs: [
@@ -46,21 +32,29 @@ const ABI = [
     type: 'event',
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'operation',
+        type: 'string',
+      },
+    ],
+    name: 'SemesterOperation',
+    type: 'event',
+  },
+  {
     inputs: [
       {
         internalType: 'string',
-        name: 'id',
+        name: 'semesterType',
         type: 'string',
       },
       {
-        internalType: 'string',
-        name: 'name',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'email',
-        type: 'string',
+        internalType: 'uint256',
+        name: 'year',
+        type: 'uint256',
       },
       {
         internalType: 'string',
@@ -68,7 +62,7 @@ const ABI = [
         type: 'string',
       },
     ],
-    name: 'addCertificate',
+    name: 'addSemester',
     outputs: [
       {
         internalType: 'bool',
@@ -77,53 +71,6 @@ const ABI = [
       },
     ],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'id',
-        type: 'string',
-      },
-    ],
-    name: 'getCertificate',
-    outputs: [
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'getCertificateCount',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -139,24 +86,19 @@ const ABI = [
         type: 'uint256',
       },
     ],
-    name: 'getCertificatesWithPagination',
+    name: 'getAllSemestersWithPagination',
     outputs: [
       {
         components: [
           {
             internalType: 'string',
-            name: 'id',
+            name: 'semesterType',
             type: 'string',
           },
           {
-            internalType: 'string',
-            name: 'name',
-            type: 'string',
-          },
-          {
-            internalType: 'string',
-            name: 'email',
-            type: 'string',
+            internalType: 'uint256',
+            name: 'year',
+            type: 'uint256',
           },
           {
             internalType: 'string',
@@ -164,9 +106,41 @@ const ABI = [
             type: 'string',
           },
         ],
-        internalType: 'struct CertificateStore.Certificate[]',
+        internalType: 'struct SemesterStore.Semester[]',
         name: '',
         type: 'tuple[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'id',
+        type: 'string',
+      },
+    ],
+    name: 'getSemester',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getSemesterCount',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -193,7 +167,7 @@ const ABI = [
         type: 'string',
       },
     ],
-    name: 'removeCertificate',
+    name: 'removeSemester',
     outputs: [
       {
         internalType: 'bool',
@@ -233,21 +207,11 @@ const ABI = [
       },
       {
         internalType: 'string',
-        name: 'name',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'email',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
         name: 'url',
         type: 'string',
       },
     ],
-    name: 'updateCertificate',
+    name: 'updateSemester',
     outputs: [
       {
         internalType: 'bool',
@@ -261,13 +225,12 @@ const ABI = [
 ];
 
 @Injectable()
-export class CertificatesService {
-  private readonly logger = new Logger('Certificate-DataFetch-Cron');
+export class SemesterResultService {
+  private readonly logger = new Logger('Semester-DataFetch-Cron');
+
   constructor(
-    @InjectRepository(Certificate)
-    private certificateRepo: Repository<Certificate>,
-    @InjectRepository(Student)
-    private studentsRepo: Repository<Student>,
+    @InjectRepository(SemesterResult)
+    private semesterRepo: Repository<SemesterResult>,
   ) {}
 
   // Cron job implementation for automatically retrieving and storing data from blockchain into db
@@ -276,51 +239,48 @@ export class CertificatesService {
     try {
       const provider = new JsonRpcProvider(process.env.RPC_URL);
       const contract = new Contract(
-        DeployedContracts.CertificateStore,
+        DeployedContracts.SemesterStore,
         ABI,
         provider,
       );
 
-      const dataCountLocal = await this.certificateRepo.count();
+      const dataCountLocal = await this.semesterRepo.count();
       const dataCountBlockchain = (
-        await contract.functions.getCertificateCount()
+        await contract.functions.getSemesterCount()
       )[0].toNumber();
       if (dataCountLocal != dataCountBlockchain) {
         const CHUNK_SIZE = 10;
-        const fromCertificateIndex = Math.max(0, dataCountLocal - CHUNK_SIZE);
-        let toCertificateIndex = dataCountLocal + CHUNK_SIZE;
-        if (toCertificateIndex > dataCountBlockchain)
-          toCertificateIndex = dataCountBlockchain;
-        const certificates =
-          await contract.functions.getCertificatesWithPagination(
-            fromCertificateIndex,
-            toCertificateIndex,
+        const fromSemesterIndex = Math.max(0, dataCountLocal - CHUNK_SIZE);
+        let toSemesterIndex = dataCountLocal + CHUNK_SIZE;
+        if (toSemesterIndex > dataCountBlockchain)
+          toSemesterIndex = dataCountBlockchain;
+        const semesters =
+          await contract.functions.getAllSemestersWithPagination(
+            fromSemesterIndex,
+            toSemesterIndex,
             { from: process.env.CONTRACT_OWNER },
           );
-        for (const certificate of certificates[0]) {
+        for (const semester of semesters[0]) {
           const data = {
-            id: certificate['id'],
-            name: certificate['name'],
-            email: certificate['email'],
-            url: certificate['url'],
+            id: semester['semesterType'] + '_' + semester['year'].toNumber(),
+            url: semester['url'],
+            type: semester['semesterType'],
+            year: semester['year'].toNumber(),
           };
           console.log(data);
           try {
-            await this.studentsRepo.save({
-              id: data.id,
-              name: data.name,
-              email: data.email,
-            });
-            await this.certificateRepo.save({ id: data.id, url: data.url });
+            if (data.year != 0) {
+              await this.semesterRepo.save(data);
+            }
           } catch (error) {
             this.logger.error('Duplicate Data Found!');
           }
         }
         this.logger.verbose(
-          `Fetched ${toCertificateIndex - fromCertificateIndex} certificates`,
+          `Fetched ${toSemesterIndex - fromSemesterIndex} semesters`,
         );
       } else {
-        this.logger.log('No more certificates to fetch!');
+        this.logger.log('No more semesters to fetch!');
       }
     } catch (error) {
       this.logger.error(error);
@@ -328,47 +288,47 @@ export class CertificatesService {
   }
 
   /**
-   * Create Certificate
+   * Create Result
    * @params createUse
-   * @return Certificates
+   * @return Results
    */
-  async create(
-    createCertificateInput: CreateCertificateDto,
-  ): Promise<Certificate> {
+  async create(createResultInput: CreateResultDto): Promise<SemesterResult> {
     try {
-      const certificate = this.certificateRepo.create(createCertificateInput);
-      return this.certificateRepo.save(certificate);
+      const { type, year, url } = createResultInput;
+      const id = type + '_' + year;
+      const result = this.semesterRepo.create({ id, type, year, url });
+      return this.semesterRepo.save(result);
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
   /**
-   * Get Data By Certificate Address
+   * Get Data By Result Address
    * @param email
    * @returns userData
    */
-  async show(id: string): Promise<Certificate> {
+  async show(id: string): Promise<SemesterResult> {
     try {
-      const certificateData = await this.certificateRepo.findOneBy({ id });
-      if (!certificateData) return null;
-      return certificateData;
+      const resultData = await this.semesterRepo.findOneBy({ id });
+      if (!resultData) return null;
+      return resultData;
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
   /**
-   * Update Certificates Attributes
-   * @param updateCertificatesInput
+   * Update Results Attributes
+   * @param updateResultsInput
    * @returns updated user
    */
   async update(
-    updateCertificatesInput: UpdateCertificatesInput,
-  ): Promise<Certificate> {
+    updateResultsInput: UpdateResultsInput,
+  ): Promise<SemesterResult> {
     try {
-      const { id, ...rest } = updateCertificatesInput;
-      await this.certificateRepo.update({ id }, rest);
+      const { id, url } = updateResultsInput;
+      await this.semesterRepo.update({ id }, { url });
       return this.show(id);
     } catch (error) {
       throw new BadRequestException(error);
@@ -376,14 +336,14 @@ export class CertificatesService {
   }
 
   /**
-   * DELETE Certificates
-   * @param deleteCertificates
+   * DELETE Results
+   * @param deleteResults
    * @returns Message that user successfully deleted
    */
   async delete(deleteWithIds: { id: string[] }): Promise<void> {
     try {
       const ids = deleteWithIds.id;
-      await this.certificateRepo.delete({ id: In(ids) });
+      await this.semesterRepo.delete({ id: In(ids) });
       return null;
     } catch (error) {
       throw new BadRequestException(error);
@@ -391,26 +351,24 @@ export class CertificatesService {
   }
 
   /**
-   * Get All Certificates ... With Filters
+   * Get All Results ... With Filters
    * @@params No Params
-   * @returns Array of Certificates and Total Number of Certificates
+   * @returns Array of Results and Total Number of Results
    */
-  async index(filterDto: FilterCertificateInput): Promise<GetAllCertificates> {
+  async index(filterDto: FilterResultInput): Promise<GetAllResults> {
     try {
       const { page = 1, limit = 20, ...rest } = filterDto;
       const [items, total] = await Promise.all([
-        this.certificateRepo.find({
+        this.semesterRepo.find({
           where: {
             id: rest?.id,
-            // studentId: rest?.studentId,
           },
           skip: (page - 1) * limit || 0,
           take: limit || 10,
         }),
-        this.certificateRepo.count({
+        this.semesterRepo.count({
           where: {
             id: rest?.id,
-            // studentId: rest?.studentId,
           },
         }),
       ]);

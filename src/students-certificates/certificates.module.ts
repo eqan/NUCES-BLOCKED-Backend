@@ -5,10 +5,11 @@ import { AuthService } from 'src/auth/auth.service';
 import { Certificate } from './entities/certificates.entity';
 import { CertificatessResolver } from './certificates.resolver';
 import { CertificatesService } from './certificates.service';
+import { Student } from 'src/students/entities/students.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Certificate]),
+    TypeOrmModule.forFeature([Certificate, Student]),
     forwardRef(() => AuthModule),
   ],
   providers: [CertificatessResolver, CertificatesService, AuthService],
