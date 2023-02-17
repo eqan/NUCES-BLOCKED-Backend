@@ -248,8 +248,8 @@ export class SemesterResultService {
       const dataCountBlockchain = (
         await contract.functions.getSemesterCount()
       )[0].toNumber();
-      if (dataCountLocal != dataCountBlockchain) {
-        const CHUNK_SIZE = 10;
+      if (dataCountLocal < dataCountBlockchain) {
+        const CHUNK_SIZE = 100;
         const fromSemesterIndex = Math.max(0, dataCountLocal - CHUNK_SIZE);
         let toSemesterIndex = dataCountLocal + CHUNK_SIZE;
         if (toSemesterIndex > dataCountBlockchain)

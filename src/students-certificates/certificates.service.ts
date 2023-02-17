@@ -285,8 +285,8 @@ export class CertificatesService {
       const dataCountBlockchain = (
         await contract.functions.getCertificateCount()
       )[0].toNumber();
-      if (dataCountLocal != dataCountBlockchain) {
-        const CHUNK_SIZE = 10;
+      if (dataCountLocal < dataCountBlockchain) {
+        const CHUNK_SIZE = 100;
         const fromCertificateIndex = Math.max(0, dataCountLocal - CHUNK_SIZE);
         let toCertificateIndex = dataCountLocal + CHUNK_SIZE;
         if (toCertificateIndex > dataCountBlockchain)
