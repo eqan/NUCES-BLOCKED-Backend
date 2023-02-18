@@ -71,6 +71,7 @@ export class UsersService {
     try {
       const { type } = await this.usersRepo.findOneBy({ email });
       console.log(type);
+      if (!type) return null;
       return type;
     } catch (error) {
       throw new BadRequestException(error);
