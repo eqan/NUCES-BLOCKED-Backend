@@ -11,6 +11,7 @@ import { UpdateUsersInput } from './dto/update-user.input';
 import { Users } from './entities/users.entity';
 import * as bcrypt from 'bcrypt';
 import { AdminEntity } from './entities/admin.users.entity';
+import { UserTypes } from './entities/enum/user.types.enums';
 
 @Injectable()
 export class UsersService {
@@ -56,6 +57,21 @@ export class UsersService {
       const userData = await this.usersRepo.findOneBy({ email });
       if (!userData) return null;
       return userData;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Get Data By User Address
+   * @param email
+   * @returns userData
+   */
+  async showUserType(email: string): Promise<UserTypes> {
+    try {
+      const { type } = await this.usersRepo.findOneBy({ email });
+      console.log(type);
+      return type;
     } catch (error) {
       throw new BadRequestException(error);
     }
