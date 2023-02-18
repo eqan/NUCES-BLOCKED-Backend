@@ -10,7 +10,6 @@ import { LoginUserInput } from './dto/logged-user.input';
 import { UpdateUsersInput } from './dto/update-user.input';
 import { Users } from './entities/users.entity';
 import * as bcrypt from 'bcrypt';
-import { AdminEntity } from './entities/admin.users.entity';
 import { UserTypes } from './entities/enum/user.types.enums';
 
 @Injectable()
@@ -18,8 +17,6 @@ export class UsersService {
   constructor(
     @InjectRepository(Users)
     private usersRepo: Repository<Users>,
-    @InjectRepository(AdminEntity)
-    private adminInfoRepo: Repository<AdminEntity>,
     private authService: AuthService,
   ) {}
 
@@ -102,16 +99,9 @@ export class UsersService {
    */
   async update(updateUsersInput: UpdateUsersInput): Promise<Users> {
     try {
-      const { email, AdminInformation, ...rest } = updateUsersInput;
+      const { email, ...rest } = updateUsersInput;
       const { id } = await this.usersRepo.findOne({ where: { email } });
       await this.usersRepo.update({ id }, rest);
-      if (AdminInformation) {
-        const adminEntity = await this.adminInfoRepo.findOne({ where: { id } });
-        await this.adminInfoRepo.update(
-          { id: adminEntity.id },
-          AdminInformation,
-        );
-      }
       return await this.usersRepo.findOne({ where: { id } });
     } catch (error) {
       throw new BadRequestException(error);
@@ -127,7 +117,6 @@ export class UsersService {
     try {
       const ids = deleteWithIds.id;
       await this.usersRepo.delete({ id: In(ids) });
-      await this.adminInfoRepo.delete({ id: In(ids) });
       return null;
     } catch (error) {
       // console.log(error);

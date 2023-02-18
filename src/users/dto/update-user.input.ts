@@ -5,9 +5,8 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  ValidateNested,
+  IsUrl,
 } from 'class-validator';
-import { CreateAdminEntity } from './nestedObjects/admin.entity.dto';
 
 @InputType()
 export class UpdateUsersInput {
@@ -27,8 +26,7 @@ export class UpdateUsersInput {
   password: string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => CreateAdminEntity)
-  @Field(() => CreateAdminEntity, { nullable: true })
-  AdminInformation?: CreateAdminEntity;
+  @IsUrl({ message: 'Must be a valid URL' })
+  @Field({ nullable: true })
+  imgUrl: string;
 }

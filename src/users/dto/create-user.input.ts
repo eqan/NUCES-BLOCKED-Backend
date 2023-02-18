@@ -1,15 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsEmail, IsEnum, IsNotEmpty, IsString, IsUrl } from 'class-validator';
 import { UserTypes } from '../entities/enum/user.types.enums';
-import { CreateAdminEntity } from './nestedObjects/admin.entity.dto';
 
 @InputType('CreateUserInput')
 export class CreateUserInput {
@@ -31,9 +22,7 @@ export class CreateUserInput {
   @Field(() => UserTypes)
   type: UserTypes;
 
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => CreateAdminEntity)
-  @Field(() => CreateAdminEntity, { nullable: true })
-  AdminInformation?: CreateAdminEntity;
+  @IsUrl({ message: 'Must be a valid URL' })
+  @Field()
+  imgUrl: string;
 }

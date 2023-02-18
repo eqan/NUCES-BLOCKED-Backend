@@ -1,15 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IsEmail, IsOptional } from 'class-validator';
+import { IsEmail } from 'class-validator';
 import {
   BaseEntity,
   Column,
   Entity,
-  JoinColumn,
-  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { AdminEntity } from './admin.users.entity';
 import { UserTypes } from './enum/user.types.enums';
 
 /**Create users table in database
@@ -37,6 +34,10 @@ export class Users extends BaseEntity {
   password: string;
 
   @Field()
+  @Column({ type: 'text' })
+  imgUrl: string;
+
+  @Field()
   @Column({
     type: 'enum',
     enumName: 'UserTypeEnum',
@@ -44,13 +45,4 @@ export class Users extends BaseEntity {
     default: null,
   })
   type: UserTypes;
-
-  @IsOptional()
-  @Field(() => AdminEntity, { nullable: true })
-  @OneToOne(() => AdminEntity, {
-    eager: true,
-    cascade: true,
-  })
-  @JoinColumn()
-  AdminInformation?: AdminEntity;
 }
