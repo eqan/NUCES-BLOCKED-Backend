@@ -171,6 +171,7 @@ export class ContributionsService {
               where: {
                 id: rest.studentId,
               },
+              relations: { student: true },
               skip: (page - 1) * limit || 0,
               take: limit || 10,
             }),
@@ -187,6 +188,7 @@ export class ContributionsService {
               where: {
                 studentId: rest.studentId,
               },
+              relations: { student: true },
               skip: (page - 1) * limit || 0,
               take: limit || 10,
             }),
@@ -203,6 +205,7 @@ export class ContributionsService {
               where: {
                 studentId: rest.studentId,
               },
+              relations: { student: true },
               skip: (page - 1) * limit || 0,
               take: limit || 10,
             }),
@@ -219,6 +222,7 @@ export class ContributionsService {
               where: {
                 studentId: rest.studentId,
               },
+              relations: { student: true },
               skip: (page - 1) * limit || 0,
               take: limit || 10,
             }),
