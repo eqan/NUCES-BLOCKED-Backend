@@ -19,7 +19,7 @@ export default class TypeOrmConfig {
       entities: [Users, Student, Certificate],
       autoLoadEntities: true,
       synchronize: true,
-      dropSchema: true,
+      // dropSchema: true,
     };
   }
 }

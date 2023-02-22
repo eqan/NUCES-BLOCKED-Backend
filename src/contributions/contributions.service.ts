@@ -88,13 +88,14 @@ export class ContributionsService {
     studentInfo.SocietyHeadsContributions = [];
     studentInfo.CareerCounsellorContributions = [];
     try {
-      const { contributionId, contributionType, studentId } =
+      const { contributionId, contributionType, studentId, contributor } =
         getContributionInput;
       switch (contributionType) {
         case ContributionTypeEnum.ADMIN:
           studentInfo.AdminContributions = await this.adminRepo.findOneByOrFail(
             {
               id: studentId,
+              contributor,
             },
           );
         case ContributionTypeEnum.SOCIETY_HEAD:
@@ -102,18 +103,21 @@ export class ContributionsService {
             await this.societyRepo.findOneByOrFail({
               id: contributionId,
               studentId,
+              contributor,
             });
         case ContributionTypeEnum.CAREER_COUNSELLOR:
           studentInfo.CareerCounsellorContributions[0] =
             await this.counsellorRepo.findOneByOrFail({
               id: contributionId,
               studentId,
+              contributor,
             });
         case ContributionTypeEnum.TEACHER:
           studentInfo.CareerCounsellorContributions[0] =
             await this.counsellorRepo.findOneByOrFail({
               id: contributionId,
               studentId,
+              contributor,
             });
       }
       return studentInfo;
@@ -187,6 +191,7 @@ export class ContributionsService {
             this.societyRepo.find({
               where: {
                 studentId: rest.studentId,
+                contributor: rest.contributor,
               },
               relations: { student: true },
               skip: (page - 1) * limit || 0,
@@ -195,6 +200,7 @@ export class ContributionsService {
             this.societyRepo.count({
               where: {
                 studentId: rest.studentId,
+                contributor: rest.contributor,
               },
             }),
           ]);
@@ -204,6 +210,7 @@ export class ContributionsService {
             this.counsellorRepo.find({
               where: {
                 studentId: rest.studentId,
+                contributor: rest.contributor,
               },
               relations: { student: true },
               skip: (page - 1) * limit || 0,
@@ -212,6 +219,7 @@ export class ContributionsService {
             this.counsellorRepo.count({
               where: {
                 studentId: rest.studentId,
+                contributor: rest.contributor,
               },
             }),
           ]);
@@ -221,6 +229,7 @@ export class ContributionsService {
             this.teachersRepo.find({
               where: {
                 studentId: rest.studentId,
+                contributor: rest.contributor,
               },
               relations: { student: true },
               skip: (page - 1) * limit || 0,
@@ -229,6 +238,7 @@ export class ContributionsService {
             this.teachersRepo.count({
               where: {
                 studentId: rest.studentId,
+                contributor: rest.contributor,
               },
             }),
           ]);
