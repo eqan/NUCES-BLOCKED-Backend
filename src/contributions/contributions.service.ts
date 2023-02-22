@@ -45,6 +45,7 @@ export class ContributionsService {
           contribution = this.adminRepo.create({
             id: rest.studentId,
             contribution: toNumber(rest.contribution),
+            contributor: rest.contributor,
             adminContributionType: contributionType.adminContributionType,
           });
           return await this.adminRepo.save(contribution);
@@ -52,6 +53,8 @@ export class ContributionsService {
           contribution = this.societyRepo.create({
             studentId: rest.studentId,
             contribution: rest.contribution,
+            title: rest.title,
+            contributor: rest.contributor,
             societyHeadContributionType:
               contributionType.societyHeadContributionType,
           });
@@ -60,6 +63,8 @@ export class ContributionsService {
           contribution = this.counsellorRepo.create({
             studentId: rest.studentId,
             contribution: rest.contribution,
+            title: rest.title,
+            contributor: rest.contributor,
             careerCounsellorContributionType:
               contributionType.careerCounsellorContributionType,
           });
@@ -68,6 +73,8 @@ export class ContributionsService {
           contribution = this.teachersRepo.create({
             studentId: rest.studentId,
             contribution: rest.contribution,
+            title: rest.title,
+            contributor: rest.contributor,
             teacherContributionType: contributionType.teacherContributionType,
           });
           return await this.teachersRepo.save(contribution);

@@ -129,9 +129,9 @@ export class ContributionDto {
   contributionType: ContributionTypeInput;
 
   @IsOptional()
-  @Field()
+  @Field({ nullable: true })
   @IsString()
-  title: string;
+  title?: string;
 
   @Field()
   @IsString()
