@@ -23,6 +23,10 @@ export abstract class TeachersContributions extends Timestamps {
   @Column('text')
   studentId: string;
 
+  @Field()
+  @Column('text')
+  title: string;
+
   @Field(() => TeacherContributionEnum)
   @Column({
     enum: TeacherContributionEnum,
@@ -32,6 +36,10 @@ export abstract class TeachersContributions extends Timestamps {
   @Field()
   @Column('text')
   contribution: string;
+
+  @Field()
+  @Column('text')
+  contributor: string;
 
   @Field(() => Student, { nullable: true })
   @ManyToOne(() => Student, (student) => student.id)

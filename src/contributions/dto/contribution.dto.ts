@@ -1,6 +1,6 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { AdminContributionEnum } from 'src/contributions/entities/enums/admin.contribution.enums';
 import { CareerCounsellorContributionEnum } from 'src/contributions/entities/enums/careercounsellor.contribution.enums';
 import { ContributionTypeEnum } from 'src/contributions/entities/enums/contributions.enum';
@@ -128,9 +128,18 @@ export class ContributionDto {
   })
   contributionType: ContributionTypeInput;
 
+  @IsOptional()
+  @Field()
+  @IsString()
+  title: string;
+
   @Field()
   @IsString()
   contribution: string;
+
+  @Field()
+  @IsString()
+  contributor: string;
 
   @Field()
   @IsString()
