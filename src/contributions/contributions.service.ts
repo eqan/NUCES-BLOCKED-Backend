@@ -11,7 +11,7 @@ import { CareerCounsellorContributions } from 'src/contributions/entities/career
 import { SocietyHeadsContributions } from 'src/contributions/entities/societyhead.contribution.entity';
 import { TeachersContributions } from 'src/contributions/entities/teacher.contribution.entity';
 import { Student } from 'src/students/entities/students.entity';
-import { Repository } from 'typeorm';
+import { ILike, Like, Repository } from 'typeorm';
 import { ContributionDto, ContributionInput } from './dto/contribution.dto';
 import { DeleteContributionInput } from './dto/delete-contribution.input';
 import { GetContributionInput } from './dto/get-contribution.input';
@@ -94,6 +94,7 @@ export class ContributionsService {
     studentInfo.id = getContributionInput.studentId;
     studentInfo.SocietyHeadsContributions = [];
     studentInfo.CareerCounsellorContributions = [];
+    studentInfo.TeachersContributions = [];
     try {
       const { contributionId, contributionType, studentId, contributor } =
         getContributionInput;
@@ -120,8 +121,8 @@ export class ContributionsService {
               contributor,
             });
         case ContributionTypeEnum.TEACHER:
-          studentInfo.CareerCounsellorContributions[0] =
-            await this.counsellorRepo.findOneByOrFail({
+          studentInfo.TeachersContributions[0] =
+            await this.teachersRepo.findOneByOrFail({
               id: contributionId,
               studentId,
               contributor,
@@ -174,82 +175,71 @@ export class ContributionsService {
   ): Promise<GetAllContributions> {
     try {
       const { page = 1, limit = 20, ...rest } = filterDto;
-      let [items, total]: [any, number] = [null, 0];
+      let query = null;
       switch (rest.contributionType) {
         case ContributionTypeEnum.ADMIN:
-          [items, total] = await Promise.all([
-            this.adminRepo.find({
-              where: {
-                id: rest.studentId,
-              },
-              relations: { student: true },
-              skip: (page - 1) * limit || 0,
-              take: limit || 10,
-            }),
-            this.adminRepo.count({
-              where: {
-                id: rest.studentId,
-              },
-            }),
-          ]);
-          return { adminContributions: items, total };
+          query = this.adminRepo
+            .createQueryBuilder('admin')
+            .leftJoinAndSelect('admin.student', 'student')
+            .where('admin.id LIKE :id OR student.name LIKE :name', {
+              id: `%${rest.studentId}%`,
+              name: `%${rest.studentId}%`,
+            })
+            .skip((page - 1) * limit || 0)
+            .take(limit || 10);
+
+          return {
+            adminContributions: await query.getMany(),
+            total: await query.getCount(),
+          };
         case ContributionTypeEnum.SOCIETY_HEAD:
-          [items, total] = await Promise.all([
-            this.societyRepo.find({
-              where: {
-                studentId: rest.studentId,
-                contributor: rest.contributor,
-              },
-              relations: { student: true },
-              skip: (page - 1) * limit || 0,
-              take: limit || 10,
-            }),
-            this.societyRepo.count({
-              where: {
-                studentId: rest.studentId,
-                contributor: rest.contributor,
-              },
-            }),
-          ]);
-          return { societyHeadsContributions: items, total };
+          query = this.societyRepo
+            .createQueryBuilder('society')
+            .leftJoinAndSelect('society.student', 'student')
+            .where('society.id LIKE :id OR student.name LIKE :name', {
+              studentId: `%${rest.studentId}%`,
+              name: `%${rest.studentId}%`,
+            })
+            .skip((page - 1) * limit || 0)
+            .take(limit || 10);
+
+          return {
+            societyHeadsContributions: await query.getMany(),
+            total: await query.getCount(),
+          };
+
         case ContributionTypeEnum.CAREER_COUNSELLOR:
-          [items, total] = await Promise.all([
-            this.counsellorRepo.find({
-              where: {
-                studentId: rest.studentId,
-                contributor: rest.contributor,
-              },
-              relations: { student: true },
-              skip: (page - 1) * limit || 0,
-              take: limit || 10,
-            }),
-            this.counsellorRepo.count({
-              where: {
-                studentId: rest.studentId,
-                contributor: rest.contributor,
-              },
-            }),
-          ]);
-          return { careerCounsellorContributions: items, total };
+          query = this.counsellorRepo
+            .createQueryBuilder('careercounsellor')
+            .leftJoinAndSelect('careercounsellor.student', 'student')
+            .where('careercounsellor.id LIKE :id OR student.name LIKE :name', {
+              studentId: `%${rest.studentId}%`,
+              name: `%${rest.studentId}%`,
+            })
+            .skip((page - 1) * limit || 0)
+            .take(limit || 10);
+
+          return {
+            careerCounsellorContributions: await query.getMany(),
+            total: await query.getCount(),
+          };
+
         case ContributionTypeEnum.TEACHER:
-          [items, total] = await Promise.all([
-            this.teachersRepo.find({
-              where: {
-                studentId: rest.studentId,
-                contributor: rest.contributor,
-              },
-              relations: { student: true },
-              skip: (page - 1) * limit || 0,
-              take: limit || 10,
-            }),
-            this.teachersRepo.count({
-              where: {
-                studentId: rest.studentId,
-                contributor: rest.contributor,
-              },
-            }),
-          ]);
-          return { teachersContribution: items, total };
+          query = this.teachersRepo
+            .createQueryBuilder('teacher')
+            .leftJoinAndSelect('teacher.student', 'student')
+            .where('teacher.id LIKE :id OR student.name LIKE :name', {
+              studentId: `%${rest.studentId}%`,
+              name: `%${rest.studentId}%`,
+            })
+            .skip((page - 1) * limit || 0)
+            .take(limit || 10);
+
+          return {
+            teachersContribution: await query.getMany(),
+            total: await query.getCount(),
+          };
+
         default:
           return { adminContributions: [], total: 0 };
       }
