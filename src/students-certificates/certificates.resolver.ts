@@ -10,8 +10,8 @@ import { UpdateCertificatesInput } from './dto/update-certificates.input';
 import { Certificate } from './entities/certificates.entity';
 import { CertificatesService } from './certificates.service';
 
-@Resolver()
-export class CertificatessResolver extends BaseProvider<Certificate> {
+@Resolver(() => Certificate)
+export class CertificatesResolver extends BaseProvider<Certificate> {
   constructor(private readonly certificateService: CertificatesService) {
     super();
   }
