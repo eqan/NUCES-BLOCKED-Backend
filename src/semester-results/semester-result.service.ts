@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilterResultInput } from './dto/filter.semester-result.dto';
-import { In, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { CreateResultDto } from './dto/create-semester-result.input';
 import { GetAllResults } from './dto/get-all-semester-results.dto';
 import { UpdateResultsInput } from './dto/update-semester-result.input';
@@ -86,7 +86,9 @@ export class SemesterResultService {
       const { type, year, url } = createResultInput;
       const id = type + '_' + year;
       const result = this.semesterRepo.create({ id, type, year, url });
-      return this.semesterRepo.save(result);
+      await this.semesterRepo.save(result);
+      const data = (await this.index({ id })).items[0];
+      return data;
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -150,14 +152,14 @@ export class SemesterResultService {
       const [items, total] = await Promise.all([
         this.semesterRepo.find({
           where: {
-            id: rest?.id,
+            id: Like(`%${rest.id}%`),
           },
           skip: (page - 1) * limit || 0,
           take: limit || 10,
         }),
         this.semesterRepo.count({
           where: {
-            id: rest?.id,
+            id: Like(`%${rest.id}%`),
           },
         }),
       ]);

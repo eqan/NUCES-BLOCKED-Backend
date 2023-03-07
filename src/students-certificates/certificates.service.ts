@@ -91,7 +91,10 @@ export class CertificatesService {
   ): Promise<Certificate> {
     try {
       const certificate = this.certificateRepo.create(createCertificateInput);
-      return this.certificateRepo.save(certificate);
+      await this.certificateRepo.save(certificate);
+      const data = (await this.index({ id: createCertificateInput.id }))
+        .items[0];
+      return data;
     } catch (error) {
       throw new BadRequestException(error);
     }
