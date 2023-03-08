@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
+import { Certificate } from 'src/students-certificates/entities/certificates.entity';
 import { AdminContributions } from '../contributions/entities/admin.contribution.entity';
 import { CareerCounsellorContributions } from '../contributions/entities/careercounsellor.contribution.entity';
 import { SocietyHeadsContributions } from '../contributions/entities/societyhead.contribution.entity';
@@ -17,6 +18,7 @@ import { StudentsService } from './students.service';
       CareerCounsellorContributions,
       SocietyHeadsContributions,
       TeachersContributions,
+      Certificate,
     ]),
     forwardRef(() => AuthModule),
   ],
