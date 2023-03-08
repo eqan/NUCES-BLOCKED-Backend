@@ -132,23 +132,37 @@ export class UsersService {
   async index(filterDto: FilterUserDto): Promise<GetAllUsers> {
     try {
       const { page = 1, limit = 20, ...rest } = filterDto;
-      const [items, total] = await Promise.all([
-        this.usersRepo.find({
-          where: {
-            id: rest?.id,
-          },
-          skip: (page - 1) * limit || 0,
-          take: limit || 10,
-        }),
-        this.usersRepo.count({
-          where: {
-            id: rest.id,
-          },
-        }),
-      ]);
-      return { items, total };
+      const query = this.usersRepo
+        .createQueryBuilder('user')
+        .where('user.name LIKE :name OR user.email LIKE :email', {
+          name: `%${rest.id}%`,
+          email: `%${rest.id}%`,
+        })
+        .skip((page - 1) * limit || 0)
+        .take(limit || 10);
+
+      return {
+        items: await query.getMany(),
+        total: await query.getCount(),
+      };
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
+  // mapStringToEnum(type: string): UserTypes {
+  //   switch (type) {
+  //     case 'ADMIN':
+  //       return UserTypes.ADMIN;
+  //     case 'TEACHER':
+  //       return UserTypes.ADMIN;
+  //     case 'CAREER_COUNSELLOR':
+  //       return UserTypes.ADMIN;
+  //     case 'SOCIETY_HEAD':
+  //       return UserTypes.SOCIETY_HEAD;
+  //     case 'REGULAR_USER':
+  //       return UserTypes.REGULAR_USER;
+  //     default:
+  //       return null;
+  //   }
+  // }
 }
