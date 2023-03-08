@@ -82,21 +82,23 @@ export class StudentsService {
   async index(filterDto: FilterStudentDto): Promise<GetAllStudents> {
     try {
       const { page = 1, limit = 20, ...rest } = filterDto;
-      const [items, total] = await Promise.all([
-        this.studentsRepo.find({
-          where: {
-            id: rest?.id,
+      const query = this.studentsRepo
+        .createQueryBuilder('student')
+        .where(
+          'student.name LIKE :name OR student.email LIKE :email OR student.id LIKE :id',
+          {
+            name: `%${rest.id}%`,
+            email: `%${rest.id}%`,
+            id: `%${rest.id}%`,
           },
-          skip: (page - 1) * limit || 0,
-          take: limit || 10,
-        }),
-        this.studentsRepo.count({
-          where: {
-            id: rest.id,
-          },
-        }),
-      ]);
-      return { items, total };
+        )
+        .skip((page - 1) * limit || 0)
+        .take(limit || 10);
+
+      return {
+        items: await query.getMany(),
+        total: await query.getCount(),
+      };
     } catch (error) {
       throw new BadRequestException(error);
     }
