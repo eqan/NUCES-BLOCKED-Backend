@@ -23,6 +23,9 @@ export abstract class CareerCounsellorContributions extends Timestamps {
   @Column('text')
   studentId: string;
 
+  @Field()
+  @Column('text')
+  title: string;
   @Field(() => CareerCounsellorContributionEnum)
   @Column({
     enum: CareerCounsellorContributionEnum,
@@ -33,7 +36,11 @@ export abstract class CareerCounsellorContributions extends Timestamps {
   @Column('text')
   contribution: string;
 
-  @Field(() => Student)
+  @Field()
+  @Column('text')
+  contributor: string;
+
+  @Field(() => Student, { nullable: true })
   @ManyToOne(() => Student, (student) => student.id)
   @JoinColumn({ name: 'studentId' })
   student: Student;

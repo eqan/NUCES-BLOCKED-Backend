@@ -33,7 +33,11 @@ export abstract class AdminContributions extends Timestamps {
   @Column('float')
   contribution: number;
 
-  @Field(() => Student)
+  @Field()
+  @Column('text')
+  contributor: string;
+
+  @Field(() => Student, { nullable: true })
   @OneToOne(() => Student, (student) => student.id)
   @JoinColumn({ name: 'id' })
   student: Student;

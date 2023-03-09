@@ -1,5 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AdminContributions } from 'src/contributions/entities/admin.contribution.entity';
+import { CareerCounsellorContributions } from 'src/contributions/entities/careercounsellor.contribution.entity';
+import { SocietyHeadsContributions } from 'src/contributions/entities/societyhead.contribution.entity';
+import { TeachersContributions } from 'src/contributions/entities/teacher.contribution.entity';
+import { Certificate } from 'src/students-certificates/entities/certificates.entity';
 import { In, Repository } from 'typeorm';
 import { CreateStudentInput } from './dto/create-student.input';
 import { FilterStudentDto } from './dto/filter.students.dto';
@@ -12,6 +17,16 @@ export class StudentsService {
   constructor(
     @InjectRepository(Student)
     private studentsRepo: Repository<Student>,
+    @InjectRepository(Certificate)
+    private certificateRepo: Repository<Certificate>,
+    @InjectRepository(AdminContributions)
+    private adminRepo: Repository<AdminContributions>,
+    @InjectRepository(TeachersContributions)
+    private teachersRepo: Repository<TeachersContributions>,
+    @InjectRepository(SocietyHeadsContributions)
+    private societyRepo: Repository<SocietyHeadsContributions>,
+    @InjectRepository(CareerCounsellorContributions)
+    private counsellorRepo: Repository<CareerCounsellorContributions>,
   ) {}
 
   /**
@@ -21,8 +36,8 @@ export class StudentsService {
    */
   async create(createStudentInput: CreateStudentInput) {
     try {
-      const student = this.studentsRepo.create(createStudentInput);
-      return this.studentsRepo.save(student);
+      await this.studentsRepo.save(createStudentInput);
+      return this.show(createStudentInput.id);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -50,9 +65,8 @@ export class StudentsService {
    */
   async update(updateStudentsInput: UpdateStudentInput): Promise<Student> {
     try {
-      const { id, ...rest } = updateStudentsInput;
-      await this.studentsRepo.update({ id }, rest);
-      return this.show(id);
+      await this.studentsRepo.save(updateStudentsInput);
+      return this.show(updateStudentsInput.id);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -66,10 +80,14 @@ export class StudentsService {
   async delete(deleteWithIds: { id: string[] }): Promise<void> {
     try {
       const ids = deleteWithIds.id;
+      await this.certificateRepo.delete({ id: In(ids) });
+      await this.adminRepo.delete({ id: In(ids) });
+      await this.counsellorRepo.delete({ studentId: In(ids) });
+      await this.societyRepo.delete({ studentId: In(ids) });
+      await this.teachersRepo.delete({ studentId: In(ids) });
       await this.studentsRepo.delete({ id: In(ids) });
       return null;
     } catch (error) {
-      // console.log(error);
       throw new BadRequestException(error);
     }
   }
@@ -82,21 +100,23 @@ export class StudentsService {
   async index(filterDto: FilterStudentDto): Promise<GetAllStudents> {
     try {
       const { page = 1, limit = 20, ...rest } = filterDto;
-      const [items, total] = await Promise.all([
-        this.studentsRepo.find({
-          where: {
-            id: rest?.id,
+      const query = this.studentsRepo
+        .createQueryBuilder('student')
+        .where(
+          'student.name LIKE :name OR student.email LIKE :email OR student.id LIKE :id',
+          {
+            name: `%${rest.id}%`,
+            email: `%${rest.id}%`,
+            id: `%${rest.id}%`,
           },
-          skip: (page - 1) * limit || 0,
-          take: limit || 10,
-        }),
-        this.studentsRepo.count({
-          where: {
-            id: rest.id,
-          },
-        }),
-      ]);
-      return { items, total };
+        )
+        .skip((page - 1) * limit || 0)
+        .take(limit || 10);
+
+      return {
+        items: await query.getMany(),
+        total: await query.getCount(),
+      };
     } catch (error) {
       throw new BadRequestException(error);
     }

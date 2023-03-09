@@ -11,4 +11,8 @@ export class FilterAllContributionDto extends PaginationParam {
   @IsOptional()
   @Field(() => String, { nullable: true })
   studentId?: string;
+
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  contributor?: string;
 }

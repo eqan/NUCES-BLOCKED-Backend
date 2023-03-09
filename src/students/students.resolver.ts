@@ -52,7 +52,9 @@ export class StudentsResolver extends BaseProvider<Student> {
   ): Promise<void> {
     try {
       return await this.studentService.delete(deleteStudentInput);
-    } catch (error) {}
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   /**

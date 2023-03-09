@@ -9,6 +9,10 @@ export class GetContributionInput {
   @Field(() => String, { nullable: true })
   contributionId: string;
 
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  contributor: string;
+
   @Field(() => ContributionTypeEnum)
   contributionType: ContributionTypeEnum;
 

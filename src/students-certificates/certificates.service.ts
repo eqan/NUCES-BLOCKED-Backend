@@ -1,264 +1,17 @@
+import { Contract } from '@ethersproject/contracts';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FilterCertificateInput } from './dto/filter.certificates.dto';
+import { DeployedContracts } from 'src/contracts/deployedAddresses';
+import { Student } from 'src/students/entities/students.entity';
 import { In, Repository } from 'typeorm';
+import * as ABI from '../contracts/CertificateStore.json';
 import { CreateCertificateDto } from './dto/create-certificate.input';
+import { FilterCertificateInput } from './dto/filter.certificates.dto';
 import { GetAllCertificates } from './dto/get-all-certificates.dto';
 import { UpdateCertificatesInput } from './dto/update-certificates.input';
 import { Certificate } from './entities/certificates.entity';
-import { Cron } from '@nestjs/schedule';
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { Contract } from '@ethersproject/contracts';
-import { DeployedContracts } from 'src/contracts/deployedAddresses';
-import { Student } from 'src/students/entities/students.entity';
-
-const ABI = [
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'string',
-        name: 'operation',
-        type: 'string',
-      },
-    ],
-    name: 'CertificateOperation',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'previousOwner',
-        type: 'address',
-      },
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
-      },
-    ],
-    name: 'OwnershipTransferred',
-    type: 'event',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'id',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'name',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'email',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'url',
-        type: 'string',
-      },
-    ],
-    name: 'addCertificate',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'id',
-        type: 'string',
-      },
-    ],
-    name: 'getCertificate',
-    outputs: [
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'getCertificateCount',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'from',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'to',
-        type: 'uint256',
-      },
-    ],
-    name: 'getCertificatesWithPagination',
-    outputs: [
-      {
-        components: [
-          {
-            internalType: 'string',
-            name: 'id',
-            type: 'string',
-          },
-          {
-            internalType: 'string',
-            name: 'name',
-            type: 'string',
-          },
-          {
-            internalType: 'string',
-            name: 'email',
-            type: 'string',
-          },
-          {
-            internalType: 'string',
-            name: 'url',
-            type: 'string',
-          },
-        ],
-        internalType: 'struct CertificateStore.Certificate[]',
-        name: '',
-        type: 'tuple[]',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'owner',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'id',
-        type: 'string',
-      },
-    ],
-    name: 'removeCertificate',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
-      },
-    ],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'id',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'name',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'email',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'url',
-        type: 'string',
-      },
-    ],
-    name: 'updateCertificate',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-];
 
 @Injectable()
 export class CertificatesService {
@@ -271,13 +24,14 @@ export class CertificatesService {
   ) {}
 
   // Cron job implementation for automatically retrieving and storing data from blockchain into db
-  @Cron('*/30 * * * * *')
+  @Cron('*/1000 * * * * *')
   async dataFetchingFromBlockchain() {
     try {
       const provider = new JsonRpcProvider(process.env.RPC_URL);
+      const abiArray = ABI.abi as any[];
       const contract = new Contract(
         DeployedContracts.CertificateStore,
-        ABI,
+        abiArray,
         provider,
       );
 
@@ -337,7 +91,10 @@ export class CertificatesService {
   ): Promise<Certificate> {
     try {
       const certificate = this.certificateRepo.create(createCertificateInput);
-      return this.certificateRepo.save(certificate);
+      await this.certificateRepo.save(certificate);
+      const data = (await this.index({ id: createCertificateInput.id }))
+        .items[0];
+      return data;
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -389,7 +146,6 @@ export class CertificatesService {
       throw new BadRequestException(error);
     }
   }
-
   /**
    * Get All Certificates ... With Filters
    * @@params No Params
@@ -398,24 +154,22 @@ export class CertificatesService {
   async index(filterDto: FilterCertificateInput): Promise<GetAllCertificates> {
     try {
       const { page = 1, limit = 20, ...rest } = filterDto;
-      const [items, total] = await Promise.all([
-        this.certificateRepo.find({
-          where: {
-            id: rest?.id,
-            // studentId: rest?.studentId,
-          },
-          skip: (page - 1) * limit || 0,
-          take: limit || 10,
-        }),
-        this.certificateRepo.count({
-          where: {
-            id: rest?.id,
-            // studentId: rest?.studentId,
-          },
-        }),
-      ]);
-      return { items, total };
+      const query = this.certificateRepo
+        .createQueryBuilder('certificate')
+        .leftJoinAndSelect('certificate.student', 'student')
+        .where('certificate.id LIKE :id OR student.name LIKE :name', {
+          id: `%${rest.id}%`,
+          name: `%${rest.id}%`,
+        })
+        .skip((page - 1) * limit || 0)
+        .take(limit || 10);
+
+      return {
+        items: await query.getMany(),
+        total: await query.getCount(),
+      };
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(error);
     }
   }

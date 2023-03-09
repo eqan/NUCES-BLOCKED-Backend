@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilterResultInput } from './dto/filter.semester-result.dto';
-import { In, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { CreateResultDto } from './dto/create-semester-result.input';
 import { GetAllResults } from './dto/get-all-semester-results.dto';
 import { UpdateResultsInput } from './dto/update-semester-result.input';
@@ -10,219 +10,7 @@ import { Cron } from '@nestjs/schedule';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
 import { DeployedContracts } from 'src/contracts/deployedAddresses';
-
-const ABI = [
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'previousOwner',
-        type: 'address',
-      },
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
-      },
-    ],
-    name: 'OwnershipTransferred',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'string',
-        name: 'operation',
-        type: 'string',
-      },
-    ],
-    name: 'SemesterOperation',
-    type: 'event',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'semesterType',
-        type: 'string',
-      },
-      {
-        internalType: 'uint256',
-        name: 'year',
-        type: 'uint256',
-      },
-      {
-        internalType: 'string',
-        name: 'url',
-        type: 'string',
-      },
-    ],
-    name: 'addSemester',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'from',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'to',
-        type: 'uint256',
-      },
-    ],
-    name: 'getAllSemestersWithPagination',
-    outputs: [
-      {
-        components: [
-          {
-            internalType: 'string',
-            name: 'semesterType',
-            type: 'string',
-          },
-          {
-            internalType: 'uint256',
-            name: 'year',
-            type: 'uint256',
-          },
-          {
-            internalType: 'string',
-            name: 'url',
-            type: 'string',
-          },
-        ],
-        internalType: 'struct SemesterStore.Semester[]',
-        name: '',
-        type: 'tuple[]',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'id',
-        type: 'string',
-      },
-    ],
-    name: 'getSemester',
-    outputs: [
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'getSemesterCount',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'owner',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'id',
-        type: 'string',
-      },
-    ],
-    name: 'removeSemester',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
-      },
-    ],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'id',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'url',
-        type: 'string',
-      },
-    ],
-    name: 'updateSemester',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-];
+import * as ABI from '../contracts/SemesterStore.json';
 
 @Injectable()
 export class SemesterResultService {
@@ -238,9 +26,10 @@ export class SemesterResultService {
   async dataFetchingFromBlockchain() {
     try {
       const provider = new JsonRpcProvider(process.env.RPC_URL);
+      const abiArray = ABI.abi as any[];
       const contract = new Contract(
         DeployedContracts.SemesterStore,
-        ABI,
+        abiArray,
         provider,
       );
 
@@ -297,7 +86,9 @@ export class SemesterResultService {
       const { type, year, url } = createResultInput;
       const id = type + '_' + year;
       const result = this.semesterRepo.create({ id, type, year, url });
-      return this.semesterRepo.save(result);
+      await this.semesterRepo.save(result);
+      const data = (await this.index({ id })).items[0];
+      return data;
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -361,14 +152,14 @@ export class SemesterResultService {
       const [items, total] = await Promise.all([
         this.semesterRepo.find({
           where: {
-            id: rest?.id,
+            id: Like(`%${rest.id}%`),
           },
           skip: (page - 1) * limit || 0,
           take: limit || 10,
         }),
         this.semesterRepo.count({
           where: {
-            id: rest?.id,
+            id: Like(`%${rest.id}%`),
           },
         }),
       ]);

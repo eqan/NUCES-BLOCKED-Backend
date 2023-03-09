@@ -1,5 +1,10 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IsEmail, IsOptional, ValidateNested } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 import { Certificate } from 'src/students-certificates/entities/certificates.entity';
 import {
   BaseEntity,
@@ -22,6 +27,7 @@ import { TeachersContributions } from '../../contributions/entities/teacher.cont
 @Entity('Students')
 @Unique(['id', 'email'])
 export class Student extends BaseEntity {
+  @IsNotEmpty()
   @Field()
   @PrimaryColumn({
     unique: true,
@@ -29,16 +35,20 @@ export class Student extends BaseEntity {
   })
   id: string;
 
+  @IsNotEmpty()
   @Field()
   @IsEmail()
   @Column({ unique: true, type: 'text' })
   email: string;
 
+  @IsNotEmpty()
   @Field()
   @Column({ type: 'text' })
   name: string;
 
-  @Field(() => Certificate)
+  @IsOptional()
+  @ValidateNested()
+  @Field(() => Certificate, { nullable: true })
   @OneToOne(() => Certificate, (certificate) => certificate.id)
   certificate: Certificate;
 

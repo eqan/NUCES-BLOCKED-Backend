@@ -23,6 +23,10 @@ export abstract class SocietyHeadsContributions extends Timestamps {
   @Column('text')
   studentId: string;
 
+  @Field()
+  @Column('text')
+  title: string;
+
   @Field(() => SocietyHeadContributionEnum)
   @Column({
     enum: SocietyHeadContributionEnum,
@@ -33,7 +37,11 @@ export abstract class SocietyHeadsContributions extends Timestamps {
   @Column('text')
   contribution: string;
 
-  @Field(() => Student)
+  @Field()
+  @Column('text')
+  contributor: string;
+
+  @Field(() => Student, { nullable: true })
   @ManyToOne(() => Student, (student) => student.id)
   @JoinColumn({ name: 'studentId' })
   student: Student;
