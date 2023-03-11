@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { toNumber } from 'lodash';
-import { AdminContributions } from 'src/contributions/entities/admin.contribution.entity';
 import { CareerCounsellorContributions } from 'src/contributions/entities/careercounsellor.contribution.entity';
 import { ContributionTypeEnum } from 'src/contributions/entities/enums/contributions.enum';
 import { SocietyHeadsContributions } from 'src/contributions/entities/societyhead.contribution.entity';
@@ -21,8 +20,8 @@ import { GetContributionInput } from './dto/get-contribution.input';
 @Injectable()
 export class ContributionsService {
   constructor(
-    @InjectRepository(AdminContributions)
-    private adminRepo: Repository<AdminContributions>,
+    // @InjectRepository(AdminContributions)
+    // private adminRepo: Repository<AdminContributions>,
     @InjectRepository(TeachersContributions)
     private teachersRepo: Repository<TeachersContributions>,
     @InjectRepository(SocietyHeadsContributions)
@@ -41,14 +40,14 @@ export class ContributionsService {
       let contribution = null;
       const { contributionType, ...rest } = contributionInput;
       switch (contributionType.contributionType) {
-        case ContributionTypeEnum.ADMIN:
-          contribution = this.adminRepo.create({
-            id: rest.studentId,
-            contribution: toNumber(rest.contribution),
-            contributor: rest.contributor,
-            adminContributionType: contributionType.adminContributionType,
-          });
-          return await this.adminRepo.save(contribution);
+        // case ContributionTypeEnum.ADMIN:
+        //   contribution = this.adminRepo.create({
+        //     id: rest.studentId,
+        //     contribution: toNumber(rest.contribution),
+        //     contributor: rest.contributor,
+        //     adminContributionType: contributionType.adminContributionType,
+        //   });
+        //   return await this.adminRepo.save(contribution);
         case ContributionTypeEnum.SOCIETY_HEAD:
           contribution = this.societyRepo.create({
             studentId: rest.studentId,
@@ -99,13 +98,13 @@ export class ContributionsService {
       const { contributionId, contributionType, studentId, contributor } =
         getContributionInput;
       switch (contributionType) {
-        case ContributionTypeEnum.ADMIN:
-          studentInfo.AdminContributions = await this.adminRepo.findOneByOrFail(
-            {
-              id: studentId,
-              contributor,
-            },
-          );
+        // case ContributionTypeEnum.ADMIN:
+        // studentInfo.AdminContributions = await this.adminRepo.findOneByOrFail(
+        //   {
+        //     id: studentId,
+        //     contributor,
+        //   },
+        // );
         case ContributionTypeEnum.SOCIETY_HEAD:
           studentInfo.SocietyHeadsContributions[0] =
             await this.societyRepo.findOneByOrFail({
@@ -146,9 +145,9 @@ export class ContributionsService {
       const { contributionId, contributionType, studentId } =
         deleteContributionInput;
       switch (contributionType) {
-        case ContributionTypeEnum.ADMIN:
-          this.adminRepo.delete({ id: studentId });
-          break;
+        // case ContributionTypeEnum.ADMIN:
+        //   this.adminRepo.delete({ id: studentId });
+        //   break;
         case ContributionTypeEnum.SOCIETY_HEAD:
           this.societyRepo.delete({ studentId, id: contributionId });
           break;
@@ -177,21 +176,21 @@ export class ContributionsService {
       const { page = 1, limit = 20, ...rest } = filterDto;
       let query = null;
       switch (rest.contributionType) {
-        case ContributionTypeEnum.ADMIN:
-          query = this.adminRepo
-            .createQueryBuilder('admin')
-            .leftJoinAndSelect('admin.student', 'student')
-            .where('admin.id LIKE :id OR student.name LIKE :name', {
-              id: `%${rest.studentId}%`,
-              name: `%${rest.studentId}%`,
-            })
-            .skip((page - 1) * limit || 0)
-            .take(limit || 10);
+        // case ContributionTypeEnum.ADMIN:
+        // query = this.adminRepo
+        //   .createQueryBuilder('admin')
+        //   .leftJoinAndSelect('admin.student', 'student')
+        //   .where('admin.id LIKE :id OR student.name LIKE :name', {
+        //     id: `%${rest.studentId}%`,
+        //     name: `%${rest.studentId}%`,
+        //   })
+        //   .skip((page - 1) * limit || 0)
+        //   .take(limit || 10);
 
-          return {
-            adminContributions: await query.getMany(),
-            total: await query.getCount(),
-          };
+        // return {
+        //   adminContributions: await query.getMany(),
+        //   total: await query.getCount(),
+        // };
         case ContributionTypeEnum.SOCIETY_HEAD:
           query = this.societyRepo
             .createQueryBuilder('society')
@@ -241,7 +240,7 @@ export class ContributionsService {
           };
 
         default:
-          return { adminContributions: [], total: 0 };
+          return { teachersContribution: [], total: 0 };
       }
     } catch (error) {
       throw new BadRequestException(error);

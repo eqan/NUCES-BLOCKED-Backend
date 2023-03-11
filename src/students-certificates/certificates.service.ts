@@ -60,16 +60,24 @@ export class CertificatesService {
           };
           console.log(data);
           try {
-            await this.studentsRepo.save({
-              id: data.id,
-              name: data.name,
-              email: data.email,
-            });
-            await this.certificateRepo.save({ id: data.id, url: data.url });
+            if (data.id != '') {
+              await this.studentsRepo.save({
+                id: data.id,
+                name: data.name,
+                email: data.email,
+                cgpa: 0,
+              });
+            }
+            try {
+              await this.certificateRepo.save({ id: data.id, url: data.url });
+            } catch (error) {
+              this.logger.error('Duplicate Certificate Data Found!');
+            }
           } catch (error) {
-            this.logger.error('Duplicate Data Found!');
+            this.logger.error('Duplicate Student Data Found!');
           }
         }
+
         this.logger.verbose(
           `Fetched ${toCertificateIndex - fromCertificateIndex} certificates`,
         );

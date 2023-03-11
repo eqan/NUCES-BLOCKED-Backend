@@ -41,12 +41,4 @@ export abstract class AdminContributions extends Timestamps {
   @OneToOne(() => Student, (student) => student.id)
   @JoinColumn({ name: 'id' })
   student: Student;
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  checkCGPA() {
-    if (this.contribution >= 0 && this.contribution <= 4)
-      this.contribution = this.contribution;
-    else throw new Error('Invalid CGPA value. It must be between 0 and 4.0');
-  }
 }
