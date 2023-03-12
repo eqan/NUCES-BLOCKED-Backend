@@ -8,7 +8,6 @@ import {
 import { Timestamps } from 'src/core/embed/timestamps.embed';
 import { Certificate } from 'src/students-certificates/entities/certificates.entity';
 import {
-  BaseEntity,
   BeforeInsert,
   BeforeUpdate,
   Column,
@@ -49,8 +48,8 @@ export class Student extends Timestamps {
   name: string;
 
   @Field()
-  @Column('float')
-  cgpa: number;
+  @Column({ type: 'text' })
+  cgpa: string;
 
   @IsOptional()
   @ValidateNested()
@@ -94,7 +93,8 @@ export class Student extends Timestamps {
   @BeforeInsert()
   @BeforeUpdate()
   checkCGPA() {
-    if (this.cgpa >= 0 && this.cgpa <= 4) this.cgpa = this.cgpa;
+    if (parseFloat(this.cgpa) >= 0 && parseFloat(this.cgpa) <= 4)
+      this.cgpa = this.cgpa;
     else throw new Error('Invalid CGPA value. It must be between 0 and 4.0');
   }
 }
