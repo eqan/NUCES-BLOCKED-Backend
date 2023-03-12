@@ -65,7 +65,7 @@ export class CertificatesService {
                 id: data.id,
                 name: data.name,
                 email: data.email,
-                cgpa: 0,
+                cgpa: '0',
               });
             }
             try {
