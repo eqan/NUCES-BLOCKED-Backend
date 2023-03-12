@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AdminContributions } from 'src/contributions/entities/admin.contribution.entity';
 import { CareerCounsellorContributions } from 'src/contributions/entities/careercounsellor.contribution.entity';
 import { SocietyHeadsContributions } from 'src/contributions/entities/societyhead.contribution.entity';
 import { TeachersContributions } from 'src/contributions/entities/teacher.contribution.entity';
@@ -19,8 +18,6 @@ export class StudentsService {
     private studentsRepo: Repository<Student>,
     @InjectRepository(Certificate)
     private certificateRepo: Repository<Certificate>,
-    @InjectRepository(AdminContributions)
-    private adminRepo: Repository<AdminContributions>,
     @InjectRepository(TeachersContributions)
     private teachersRepo: Repository<TeachersContributions>,
     @InjectRepository(SocietyHeadsContributions)
@@ -81,7 +78,7 @@ export class StudentsService {
     try {
       const ids = deleteWithIds.id;
       await this.certificateRepo.delete({ id: In(ids) });
-      await this.adminRepo.delete({ id: In(ids) });
+      // await this.adminRepo.delete({ id: In(ids) });
       await this.counsellorRepo.delete({ studentId: In(ids) });
       await this.societyRepo.delete({ studentId: In(ids) });
       await this.teachersRepo.delete({ studentId: In(ids) });

@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsNumber, IsString } from 'class-validator';
 
 @InputType()
 export class CreateStudentInput {
@@ -15,4 +15,8 @@ export class CreateStudentInput {
   @IsEmail({ message: 'Must be an email' })
   @Field()
   email: string;
+
+  @IsNumber()
+  @Field()
+  cgpa: number;
 }

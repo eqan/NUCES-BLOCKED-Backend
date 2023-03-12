@@ -1,6 +1,12 @@
 import { Optional } from '@nestjs/common';
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 @InputType()
 export class UpdateStudentInput {
@@ -18,4 +24,8 @@ export class UpdateStudentInput {
   @IsString()
   @Field({ nullable: true })
   name: string;
+
+  @IsNumber()
+  @Field()
+  cgpa: number;
 }

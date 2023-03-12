@@ -7,21 +7,21 @@ import { ContributionTypeEnum } from 'src/contributions/entities/enums/contribut
 import { SocietyHeadContributionEnum } from 'src/contributions/entities/enums/societyhead.contribution.enums';
 import { TeacherContributionEnum } from 'src/contributions/entities/enums/teacher.contribution.enums';
 
-@ObjectType('AdminContribution')
-@InputType('AdminContribution')
-export class AdminContribution {
-  @Field(() => ContributionTypeEnum, {
-    defaultValue: ContributionTypeEnum.ADMIN,
-  })
-  @Type(() => () => ContributionTypeEnum.ADMIN)
-  readonly contributionType: ContributionTypeEnum.ADMIN;
+// @ObjectType('AdminContribution')
+// @InputType('AdminContribution')
+// export class AdminContribution {
+//   @Field(() => ContributionTypeEnum, {
+//     defaultValue: ContributionTypeEnum.ADMIN,
+//   })
+//   @Type(() => () => ContributionTypeEnum.ADMIN)
+//   readonly contributionType: ContributionTypeEnum.ADMIN;
 
-  @Field(() => AdminContributionEnum, {
-    defaultValue: AdminContributionEnum.CGPA,
-  })
-  @Type(() => () => AdminContributionEnum.CGPA)
-  adminContributionType: AdminContributionEnum.CGPA;
-}
+//   @Field(() => AdminContributionEnum, {
+//     defaultValue: AdminContributionEnum.CGPA,
+//   })
+//   @Type(() => () => AdminContributionEnum.CGPA)
+//   adminContributionType: AdminContributionEnum.CGPA;
+// }
 
 @ObjectType('CareerCounsellorContribution')
 @InputType('CareerCounsellorContribution')
@@ -66,7 +66,6 @@ export class TeacherContribution {
 }
 
 export type ContributionInput =
-  | AdminContribution
   | CareerCounsellorContribution
   | SocietyHeadContribution
   | TeacherContribution;
@@ -113,7 +112,7 @@ export class ContributionDto {
     discriminator: {
       property: 'type',
       subTypes: [
-        { value: AdminContribution, name: ContributionTypeEnum.ADMIN },
+        // { value: AdminContribution, name: ContributionTypeEnum.ADMIN },
         {
           value: SocietyHeadContribution,
           name: ContributionTypeEnum.SOCIETY_HEAD,

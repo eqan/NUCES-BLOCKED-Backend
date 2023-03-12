@@ -5,9 +5,12 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
+import { Timestamps } from 'src/core/embed/timestamps.embed';
 import { Certificate } from 'src/students-certificates/entities/certificates.entity';
 import {
   BaseEntity,
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   OneToMany,
@@ -15,7 +18,6 @@ import {
   PrimaryColumn,
   Unique,
 } from 'typeorm';
-import { AdminContributions } from '../../contributions/entities/admin.contribution.entity';
 import { CareerCounsellorContributions } from '../../contributions/entities/careercounsellor.contribution.entity';
 import { SocietyHeadsContributions } from '../../contributions/entities/societyhead.contribution.entity';
 import { TeachersContributions } from '../../contributions/entities/teacher.contribution.entity';
@@ -26,7 +28,7 @@ import { TeachersContributions } from '../../contributions/entities/teacher.cont
 @ObjectType()
 @Entity('Students')
 @Unique(['id', 'email'])
-export class Student extends BaseEntity {
+export class Student extends Timestamps {
   @IsNotEmpty()
   @Field()
   @PrimaryColumn({
@@ -46,17 +48,21 @@ export class Student extends BaseEntity {
   @Column({ type: 'text' })
   name: string;
 
+  @Field()
+  @Column('float')
+  cgpa: number;
+
   @IsOptional()
   @ValidateNested()
   @Field(() => Certificate, { nullable: true })
   @OneToOne(() => Certificate, (certificate) => certificate.id)
   certificate: Certificate;
 
-  @IsOptional()
-  @ValidateNested()
-  @Field(() => AdminContributions, { nullable: true })
-  @OneToOne(() => AdminContributions, (contribution) => contribution.id)
-  AdminContributions: AdminContributions;
+  // @IsOptional()
+  // @ValidateNested()
+  // @Field(() => AdminContributions, { nullable: true })
+  // @OneToOne(() => AdminContributions, (contribution) => contribution.id)
+  // AdminContributions: AdminContributions;
 
   @IsOptional()
   @ValidateNested()
@@ -84,4 +90,11 @@ export class Student extends BaseEntity {
     (contributions) => contributions.studentId,
   )
   SocietyHeadsContributions: SocietyHeadsContributions[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  checkCGPA() {
+    if (this.cgpa >= 0 && this.cgpa <= 4) this.cgpa = this.cgpa;
+    else throw new Error('Invalid CGPA value. It must be between 0 and 4.0');
+  }
 }

@@ -3,7 +3,15 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
+import { InjectRepository } from '@nestjs/typeorm';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import BaseProvider from 'src/core/base.BaseProvider';
 import { CreateStudentInput } from './dto/create-student.input';
@@ -14,7 +22,7 @@ import { UpdateStudentInput } from './dto/update-student.input';
 import { Student } from './entities/students.entity';
 import { StudentsService } from './students.service';
 
-@Resolver()
+@Resolver(() => Student) // specify the object type for this resolver
 export class StudentsResolver extends BaseProvider<Student> {
   constructor(private readonly studentService: StudentsService) {
     super();
@@ -109,4 +117,15 @@ export class StudentsResolver extends BaseProvider<Student> {
       throw new BadRequestException(error);
     }
   }
+
+  // @ResolveField('AdminContributions', () => AdminContributions, {
+  //   nullable: true,
+  // })
+  // async getAdminContributions(
+  //   @Parent() student: Student,
+  // ): Promise<AdminContributions> {
+  //   return await this.adminContributionsRepo.findOne({
+  //     where: { id: student.id },
+  //   });
+  // }
 }
