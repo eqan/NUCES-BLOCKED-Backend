@@ -22,7 +22,7 @@ export class SemesterResultService {
   ) {}
 
   // Cron job implementation for automatically retrieving and storing data from blockchain into db
-  @Cron('*/30 * * * * *')
+  @Cron('*/1000 * * * * *')
   async dataFetchingFromBlockchain() {
     try {
       const provider = new JsonRpcProvider(process.env.RPC_URL);

@@ -24,7 +24,7 @@ export class CertificatesService {
   ) {}
 
   // Cron job implementation for automatically retrieving and storing data from blockchain into db
-  @Cron('*/1000 * * * * *')
+  @Cron('*/10000 * * * * *')
   async dataFetchingFromBlockchain() {
     try {
       const provider = new JsonRpcProvider(process.env.RPC_URL);
