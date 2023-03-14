@@ -6,23 +6,45 @@ import { CreateResultDto } from './dto/create-semester-result.input';
 import { GetAllResults } from './dto/get-all-semester-results.dto';
 import { UpdateResultsInput } from './dto/update-semester-result.input';
 import { SemesterResult } from './entities/semester-result.entity';
-import { Cron } from '@nestjs/schedule';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronExpression } from '@nestjs/schedule';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
 import { DeployedContracts } from 'src/contracts/deployedAddresses';
 import * as ABI from '../contracts/SemesterStore.json';
+import { CronJob } from 'cron';
 
 @Injectable()
 export class SemesterResultService {
   private readonly logger = new Logger('Semester-DataFetch-Cron');
+  private readonly jobName = 'fetch-semester-results-from-blockchain';
+  private job: CronJob;
 
   constructor(
     @InjectRepository(SemesterResult)
     private semesterRepo: Repository<SemesterResult>,
-  ) {}
+    private readonly schedulerRegistry: SchedulerRegistry,
+  ) {
+    this.job = new CronJob(
+      CronExpression.EVERY_MINUTE,
+      this.dataFetchingFromBlockchain.bind(this),
+    );
+    this.schedulerRegistry.addCronJob(this.jobName, this.job);
+    this.logger.log(`Job ${this.jobName} initialized to run every minute`);
+    this.startProcess();
+  }
+
+  startProcess() {
+    this.job.start();
+    this.logger.log(`Job ${this.jobName} started`);
+  }
+
+  stopProcess() {
+    this.job.stop();
+    this.logger.log(`Job ${this.jobName} stopped`);
+  }
 
   // Cron job implementation for automatically retrieving and storing data from blockchain into db
-  @Cron('*/1000 * * * * *')
   async dataFetchingFromBlockchain() {
     try {
       const provider = new JsonRpcProvider(process.env.RPC_URL);
@@ -34,7 +56,7 @@ export class SemesterResultService {
       );
 
       const dataCountLocal = await this.semesterRepo.count();
-      const dataCountBlockchain = (
+      const dataCountBlockchain: number = (
         await contract.functions.getSemesterCount()
       )[0].toNumber();
       if (dataCountLocal < dataCountBlockchain) {
@@ -54,7 +76,7 @@ export class SemesterResultService {
             id: semester['semesterType'] + '_' + semester['year'].toNumber(),
             url: semester['url'],
             type: semester['semesterType'],
-            year: semester['year'].toNumber(),
+            year: semester['year'],
           };
           console.log(data);
           try {
