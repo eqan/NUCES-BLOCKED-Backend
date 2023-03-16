@@ -33,6 +33,17 @@ export class CertificatesResolver extends BaseProvider<Certificate> {
     }
   }
 
+  @Mutation(() => String, { name: 'StartCertificateCronJob' })
+  startCronJob() {
+    this.certificateService.startProcess();
+    return 'Cron Job Started';
+  }
+
+  @Mutation(() => String, { name: 'StopCertificateCronJob' })
+  stopCronJob() {
+    this.certificateService.stopProcess();
+    return 'Cron Job Stopped';
+  }
   /**
    * Delete Certificate
    * @param deleteCertificateInput

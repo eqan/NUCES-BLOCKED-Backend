@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IsNotEmpty, IsNumber, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Timestamps } from 'src/core/embed/timestamps.embed';
 import { Column, Entity, PrimaryColumn, Unique } from 'typeorm';
 import { SemesterTypesEnum } from './enums/semester-types.enums';
@@ -17,16 +17,16 @@ export class SemesterResult extends Timestamps {
   id: string;
 
   @IsNotEmpty()
-  @IsUrl()
+  @IsString()
   @Field()
   @Column({ type: 'text', unique: true })
   url: string;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @Field()
-  @Column({ type: 'int' })
-  year: number;
+  @Column({ type: 'text' })
+  year: string;
 
   @IsNotEmpty()
   @Field()

@@ -1,5 +1,4 @@
 import { ApolloDriver } from '@nestjs/apollo';
-import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -7,7 +6,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { response } from 'express';
 import { join } from 'path';
-import { BullConfig } from './config/bull.config';
 import { typeOrmConfigAsync } from './config/typeorm.config';
 import { ContributionsModule } from './contributions/contributions.module';
 import { SemesterResultModule } from './semester-results/semester-result.module';
@@ -32,9 +30,9 @@ import { UsersModule } from './users/users.module';
     }),
     ScheduleModule.forRoot(),
 
-    BullModule.forRootAsync({
-      useClass: BullConfig,
-    }),
+    // BullModule.forRootAsync({
+    //   useClass: BullConfig,
+    // }),
     /**
      * Redis Module
      * Redis Configuration

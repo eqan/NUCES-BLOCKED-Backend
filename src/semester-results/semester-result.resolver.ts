@@ -33,6 +33,17 @@ export class SemesterResultResolver extends BaseProvider<SemesterResult> {
     }
   }
 
+  @Mutation(() => String, { name: 'StartResultCronJob' })
+  startCronJob() {
+    this.resultService.startProcess();
+    return 'Cron Job Started';
+  }
+
+  @Mutation(() => String, { name: 'StopResultCronJob' })
+  stopCronJob() {
+    this.resultService.stopProcess();
+    return 'Cron Job Stopped';
+  }
   /**
    * Delete Result
    * @param deleteResultInput

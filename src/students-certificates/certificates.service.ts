@@ -1,8 +1,9 @@
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CronJob } from 'cron';
 import { DeployedContracts } from 'src/contracts/deployedAddresses';
 import { Student } from 'src/students/entities/students.entity';
 import { In, Repository } from 'typeorm';
@@ -16,15 +17,35 @@ import { Certificate } from './entities/certificates.entity';
 @Injectable()
 export class CertificatesService {
   private readonly logger = new Logger('Certificate-DataFetch-Cron');
+  private readonly jobName = 'fetch-certificates-from-blockchain';
+  private job: CronJob;
   constructor(
     @InjectRepository(Certificate)
     private certificateRepo: Repository<Certificate>,
     @InjectRepository(Student)
     private studentsRepo: Repository<Student>,
-  ) {}
+    private readonly schedulerRegistry: SchedulerRegistry,
+  ) {
+    this.job = new CronJob(
+      CronExpression.EVERY_MINUTE,
+      this.dataFetchingFromBlockchain.bind(this),
+    );
+    this.schedulerRegistry.addCronJob(this.jobName, this.job);
+    this.logger.log(`Job ${this.jobName} initialized to run every minute`);
+    this.startProcess();
+  }
+
+  startProcess() {
+    this.job.start();
+    this.logger.log(`Job ${this.jobName} started`);
+  }
+
+  stopProcess() {
+    this.job.stop();
+    this.logger.log(`Job ${this.jobName} stopped`);
+  }
 
   // Cron job implementation for automatically retrieving and storing data from blockchain into db
-  @Cron('*/1000 * * * * *')
   async dataFetchingFromBlockchain() {
     try {
       const provider = new JsonRpcProvider(process.env.RPC_URL);

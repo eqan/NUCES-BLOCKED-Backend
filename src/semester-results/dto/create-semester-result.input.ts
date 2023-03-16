@@ -1,27 +1,20 @@
 import { Field, InputType } from '@nestjs/graphql';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUrl,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { SemesterTypesEnum } from '../entities/enums/semester-types.enums';
 
 @InputType()
 export class CreateResultDto {
   @IsNotEmpty()
-  @IsNumber()
   @Field()
-  year: number;
+  @IsString()
+  year: string;
 
   @IsNotEmpty()
   @IsEnum(SemesterTypesEnum)
   @Field(() => SemesterTypesEnum)
   type: SemesterTypesEnum;
 
-  @IsUrl()
+  @IsString()
   @Field()
   url: string;
 }

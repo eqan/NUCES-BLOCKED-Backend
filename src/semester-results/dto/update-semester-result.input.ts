@@ -1,6 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEnum, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
-import { SemesterTypesEnum } from '../entities/enums/semester-types.enums';
+import { IsString } from 'class-validator';
 
 @InputType()
 export class UpdateResultsInput {
@@ -8,7 +7,7 @@ export class UpdateResultsInput {
   @Field()
   id: string;
 
-  @IsUrl()
+  @IsString()
   @Field()
   url: string;
 }
