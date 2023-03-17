@@ -33,7 +33,9 @@ export class StudentsService {
    */
   async create(createStudentInput: CreateStudentInput) {
     try {
-      await this.studentsRepo.save(createStudentInput);
+      const result = this.studentsRepo.create(createStudentInput);
+      await this.studentsRepo.save(result);
+      // await this.studentsRepo.save(createStudentInput);
       return this.show(createStudentInput.id);
     } catch (error) {
       throw new BadRequestException(error);
@@ -62,7 +64,9 @@ export class StudentsService {
    */
   async update(updateStudentsInput: UpdateStudentInput): Promise<Student> {
     try {
-      await this.studentsRepo.save(updateStudentsInput);
+      const { id, email, name, cgpa } = updateStudentsInput;
+      await this.studentsRepo.update({ id }, { email, name, cgpa });
+      // await this.studentsRepo.save(updateStudentsInput);
       return this.show(updateStudentsInput.id);
     } catch (error) {
       throw new BadRequestException(error);
