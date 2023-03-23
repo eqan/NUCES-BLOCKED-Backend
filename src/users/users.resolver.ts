@@ -102,14 +102,14 @@ export class UsersResolver {
    * @returns User Type
    */
   // @UseGuards(JwtAuthGuard)
-  @Query(() => GetUserType, { name: 'GetUserTypeByUserEmail', nullable: true })
-  async showUserType(@Args('userEmail') id: string): Promise<GetUserType> {
-    try {
-      return await this.userService.showUserType(id);
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
+  // @Query(() => GetUserType, { name: 'GetUserTypeByUserEmail', nullable: true })
+  // async showUserType(@Args('userEmail') id: string): Promise<GetUserType> {
+  //   try {
+  //     return await this.userService.showUserType(id);
+  //   } catch (error) {
+  //     throw new BadRequestException(error);
+  //   }
+  // }
 
   /**
    * Get ALl Users
