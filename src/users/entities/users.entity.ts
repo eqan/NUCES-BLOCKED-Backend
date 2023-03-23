@@ -51,4 +51,9 @@ export class Users extends BaseEntity {
     default: null,
   })
   type: UserTypes;
+
+  @IsNotEmpty()
+  @Field()
+  @Column({ type: 'text' })
+  subType: string;
 }

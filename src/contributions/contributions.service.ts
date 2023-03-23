@@ -196,10 +196,11 @@ export class ContributionsService {
             .createQueryBuilder('society')
             .leftJoinAndSelect('society.student', 'student')
             .where(
-              'society.studentId LIKE :studentId OR student.name LIKE :name',
+              'society.studentId LIKE :studentId OR student.name LIKE :name AND society.contributor = :contributor',
               {
                 studentId: `%${rest.studentId}%`,
                 name: `%${rest.studentId}%`,
+                contributior: rest.contributor,
               },
             )
             .skip((page - 1) * limit || 0)
