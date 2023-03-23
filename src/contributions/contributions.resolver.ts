@@ -18,7 +18,7 @@ export class ContributionsResolver {
    * @returns Contributions
    */
   // @UseGuards(JwtAuthGuard)
-  @Mutation(() => Student, { name: 'CreateUpdateContribution' })
+  @Mutation(() => Student, { name: 'CreateUpdateContribution', nullable: true })
   async create(
     @Args('CreateUpdateStudentInput')
     contributionDto: ContributionDto,
@@ -84,7 +84,7 @@ export class ContributionsResolver {
   async index(
     @Args('FilterContributionsDto', { nullable: true, defaultValue: {} })
     filterContributionsDto: FilterAllContributionDto,
-  ): Promise<GetAllContributions> {
+  ): Promise<GetAllContributions | null> {
     try {
       const contribution = await this.contributionService.index(
         filterContributionsDto,

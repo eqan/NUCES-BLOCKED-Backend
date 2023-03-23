@@ -195,13 +195,15 @@ export class ContributionsService {
           query = this.societyRepo
             .createQueryBuilder('society')
             .leftJoinAndSelect('society.student', 'student')
-            .where('society.id LIKE :id OR student.name LIKE :name', {
-              studentId: `%${rest.studentId}%`,
-              name: `%${rest.studentId}%`,
-            })
+            .where(
+              'society.studentId LIKE :studentId OR student.name LIKE :name',
+              {
+                studentId: `%${rest.studentId}%`,
+                name: `%${rest.studentId}%`,
+              },
+            )
             .skip((page - 1) * limit || 0)
             .take(limit || 10);
-
           return {
             societyHeadsContributions: await query.getMany(),
             total: await query.getCount(),
@@ -211,10 +213,13 @@ export class ContributionsService {
           query = this.counsellorRepo
             .createQueryBuilder('careercounsellor')
             .leftJoinAndSelect('careercounsellor.student', 'student')
-            .where('careercounsellor.id LIKE :id OR student.name LIKE :name', {
-              studentId: `%${rest.studentId}%`,
-              name: `%${rest.studentId}%`,
-            })
+            .where(
+              'careercounsellor.studentId LIKE :studentId OR student.name LIKE :name',
+              {
+                studentId: `%${rest.studentId}%`,
+                name: `%${rest.studentId}%`,
+              },
+            )
             .skip((page - 1) * limit || 0)
             .take(limit || 10);
 
@@ -227,10 +232,13 @@ export class ContributionsService {
           query = this.teachersRepo
             .createQueryBuilder('teacher')
             .leftJoinAndSelect('teacher.student', 'student')
-            .where('teacher.id LIKE :id OR student.name LIKE :name', {
-              studentId: `%${rest.studentId}%`,
-              name: `%${rest.studentId}%`,
-            })
+            .where(
+              'teacher.studentId LIKE :studentId OR student.name LIKE :name',
+              {
+                studentId: `%${rest.studentId}%`,
+                name: `%${rest.studentId}%`,
+              },
+            )
             .skip((page - 1) * limit || 0)
             .take(limit || 10);
 

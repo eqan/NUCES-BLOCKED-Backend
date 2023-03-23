@@ -82,7 +82,7 @@ export class CertificatesService {
           console.log(data);
           try {
             if (data.id != '') {
-              await this.studentsRepo.save({
+              this.studentsRepo.create({
                 id: data.id,
                 name: data.name,
                 email: data.email,
