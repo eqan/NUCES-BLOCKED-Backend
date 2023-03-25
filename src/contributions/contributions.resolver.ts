@@ -18,18 +18,29 @@ export class ContributionsResolver {
    * @returns Contributions
    */
   // @UseGuards(JwtAuthGuard)
-  @Mutation(() => Student, { name: 'CreateUpdateContribution', nullable: true })
+  @Mutation(() => Student, { name: 'CreateContribution', nullable: true })
   async create(
-    @Args('CreateUpdateStudentInput')
+    @Args('CreateStudentInput')
     contributionDto: ContributionDto,
   ): Promise<Student> {
     try {
-      return await this.contributionService.createUpdate(contributionDto);
+      return await this.contributionService.create(contributionDto);
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
+  @Mutation(() => Student, { name: 'UpdateContribution', nullable: true })
+  async update(
+    @Args('UpdateStudentInput')
+    contributionDto: ContributionDto,
+  ): Promise<Student> {
+    try {
+      return await this.contributionService.update(contributionDto);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
   /**
    * Delete Contribution
    * @param deleteContributionInput

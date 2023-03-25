@@ -48,7 +48,7 @@ export abstract class TeachersContributions extends Timestamps {
 
   @BeforeInsert()
   @BeforeUpdate()
-  checkCGPA() {
+  checkContributionType() {
     if (!this.teacherContributionType)
       throw new Error('No contribution type was defined!');
   }

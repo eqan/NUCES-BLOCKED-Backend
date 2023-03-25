@@ -32,7 +32,7 @@ export class ContributionsService {
    * @params createUse
    * @return Contributions
    */
-  async createUpdate(contributionInput: ContributionDto): Promise<Student> {
+  async create(contributionInput: ContributionDto): Promise<Student> {
     try {
       let contribution = null;
       const { contributionType, ...rest } = contributionInput;
@@ -66,6 +66,74 @@ export class ContributionsService {
             teacherContributionType: contributionType.teacherContributionType,
           });
           return await this.teachersRepo.save(contribution);
+      }
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Upddate Contribution
+   * @params UpdateContribution
+   * @return Contributions
+   */
+  async update(contributionInput: ContributionDto): Promise<Student> {
+    try {
+      const { contributionType, ...rest } = contributionInput;
+      switch (contributionType.contributionType) {
+        case ContributionTypeEnum.SOCIETY_HEAD:
+          await this.societyRepo.update(
+            { id: rest.id },
+            {
+              studentId: rest.studentId,
+              contribution: rest.contribution,
+              title: rest.title,
+              contributor: rest.contributor,
+              societyHeadContributionType:
+                contributionType.societyHeadContributionType,
+            },
+          );
+          return await this.show({
+            contributionId: rest.id,
+            contributionType: ContributionTypeEnum.CAREER_COUNSELLOR,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
+        case ContributionTypeEnum.CAREER_COUNSELLOR:
+          await this.counsellorRepo.update(
+            { id: rest.id },
+            {
+              studentId: rest.studentId,
+              contribution: rest.contribution,
+              title: rest.title,
+              contributor: rest.contributor,
+              careerCounsellorContributionType:
+                contributionType.careerCounsellorContributionType,
+            },
+          );
+          return await this.show({
+            contributionId: rest.id,
+            contributionType: ContributionTypeEnum.CAREER_COUNSELLOR,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
+        case ContributionTypeEnum.TEACHER:
+          await this.teachersRepo.update(
+            { id: rest.id },
+            {
+              studentId: rest.studentId,
+              contribution: rest.contribution,
+              title: rest.title,
+              contributor: rest.contributor,
+              teacherContributionType: contributionType.teacherContributionType,
+            },
+          );
+          return await this.show({
+            contributionId: rest.id,
+            contributionType: ContributionTypeEnum.TEACHER,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
       }
     } catch (error) {
       throw new BadRequestException(error);
