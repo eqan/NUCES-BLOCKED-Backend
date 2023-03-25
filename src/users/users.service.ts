@@ -10,8 +10,6 @@ import { LoginUserInput } from './dto/logged-user.input';
 import { UpdateUsersInput } from './dto/update-user.input';
 import { Users } from './entities/users.entity';
 import * as bcrypt from 'bcrypt';
-import { UserTypes } from './entities/enum/user.types.enums';
-import { GetUserType } from './dto/get-user-type.output.dto';
 
 @Injectable()
 export class UsersService {

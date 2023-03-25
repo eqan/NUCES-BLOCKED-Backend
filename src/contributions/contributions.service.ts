@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { toNumber } from 'lodash';
 import { CareerCounsellorContributions } from 'src/contributions/entities/careercounsellor.contribution.entity';
 import { ContributionTypeEnum } from 'src/contributions/entities/enums/contributions.enum';
 import { SocietyHeadsContributions } from 'src/contributions/entities/societyhead.contribution.entity';
@@ -196,11 +195,11 @@ export class ContributionsService {
             .createQueryBuilder('society')
             .leftJoinAndSelect('society.student', 'student')
             .where(
-              'society.studentId LIKE :studentId OR student.name LIKE :name AND society.contributor = :contributor',
+              '(society.studentId LIKE :studentId OR student.name LIKE :name) AND society.contributor = :contributor',
               {
                 studentId: `%${rest.studentId}%`,
                 name: `%${rest.studentId}%`,
-                contributior: rest.contributor,
+                contributor: rest.contributor,
               },
             )
             .skip((page - 1) * limit || 0)
@@ -215,10 +214,11 @@ export class ContributionsService {
             .createQueryBuilder('careercounsellor')
             .leftJoinAndSelect('careercounsellor.student', 'student')
             .where(
-              'careercounsellor.studentId LIKE :studentId OR student.name LIKE :name',
+              '(careercounsellor.studentId LIKE :studentId OR student.name LIKE :name) AND careercounsellor.contributor = :contributor',
               {
                 studentId: `%${rest.studentId}%`,
                 name: `%${rest.studentId}%`,
+                contributor: rest.contributor,
               },
             )
             .skip((page - 1) * limit || 0)
@@ -234,10 +234,11 @@ export class ContributionsService {
             .createQueryBuilder('teacher')
             .leftJoinAndSelect('teacher.student', 'student')
             .where(
-              'teacher.studentId LIKE :studentId OR student.name LIKE :name',
+              '(teacher.studentId LIKE :studentId OR student.name LIKE :name) AND teacher.contributor = :contributor',
               {
                 studentId: `%${rest.studentId}%`,
                 name: `%${rest.studentId}%`,
+                contributor: rest.contributor, // corrected parameter name
               },
             )
             .skip((page - 1) * limit || 0)
