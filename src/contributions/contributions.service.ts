@@ -95,7 +95,7 @@ export class ContributionsService {
           );
           return await this.show({
             contributionId: rest.id,
-            contributionType: ContributionTypeEnum.CAREER_COUNSELLOR,
+            contributionType: ContributionTypeEnum.SOCIETY_HEAD,
             contributor: rest.contributor,
             studentId: rest.studentId,
           });
