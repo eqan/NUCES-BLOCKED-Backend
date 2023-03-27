@@ -46,7 +46,13 @@ export class ContributionsService {
             societyHeadContributionType:
               contributionType.societyHeadContributionType,
           });
-          return await this.societyRepo.save(contribution);
+          await this.counsellorRepo.save(contribution);
+          return await this.show({
+            contributionId: contribution.id,
+            contributionType: ContributionTypeEnum.SOCIETY_HEAD,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
         case ContributionTypeEnum.CAREER_COUNSELLOR:
           contribution = this.counsellorRepo.create({
             studentId: rest.studentId,
@@ -56,7 +62,13 @@ export class ContributionsService {
             careerCounsellorContributionType:
               contributionType.careerCounsellorContributionType,
           });
-          return await this.counsellorRepo.save(contribution);
+          await this.counsellorRepo.save(contribution);
+          return await this.show({
+            contributionId: contribution.id,
+            contributionType: ContributionTypeEnum.CAREER_COUNSELLOR,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
         case ContributionTypeEnum.TEACHER:
           contribution = this.teachersRepo.create({
             studentId: rest.studentId,
@@ -65,7 +77,13 @@ export class ContributionsService {
             contributor: rest.contributor,
             teacherContributionType: contributionType.teacherContributionType,
           });
-          return await this.teachersRepo.save(contribution);
+          await this.teachersRepo.save(contribution);
+          return await this.show({
+            contributionId: contribution.id,
+            contributionType: ContributionTypeEnum.TEACHER,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
       }
     } catch (error) {
       throw new BadRequestException(error);
