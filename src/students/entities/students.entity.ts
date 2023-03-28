@@ -51,6 +51,10 @@ export class Student extends Timestamps {
   @Column({ type: 'text' })
   cgpa: string;
 
+  @Field()
+  @Column({ type: 'text' })
+  batch: string;
+
   @IsOptional()
   @ValidateNested()
   @Field(() => Certificate, { nullable: true })

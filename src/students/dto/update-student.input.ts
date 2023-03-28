@@ -23,4 +23,9 @@ export class UpdateStudentInput {
   @IsString()
   @Field()
   cgpa: string;
+
+  @IsOptional()
+  @IsString()
+  @Field()
+  batch: string;
 }

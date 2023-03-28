@@ -87,6 +87,7 @@ export class CertificatesService {
                 name: data.name,
                 email: data.email,
                 cgpa: '0',
+                batch: '0000',
               });
             }
             try {

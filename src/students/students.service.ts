@@ -104,11 +104,12 @@ export class StudentsService {
       const query = this.studentsRepo
         .createQueryBuilder('student')
         .where(
-          'student.name LIKE :name OR student.email LIKE :email OR student.id LIKE :id',
+          'student.name LIKE :name OR student.email LIKE :email OR student.id LIKE :id OR student.batch LIKE :batch',
           {
             name: `%${rest.id}%`,
             email: `%${rest.id}%`,
             id: `%${rest.id}%`,
+            batch: `%${rest.id}%`,
           },
         )
         .skip((page - 1) * limit || 0)

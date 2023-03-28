@@ -20,4 +20,8 @@ export class CreateStudentInput {
   @IsString()
   @Field()
   cgpa: string;
+
+  @IsString()
+  @Field()
+  batch: string;
 }
