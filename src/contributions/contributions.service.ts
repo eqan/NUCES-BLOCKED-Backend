@@ -9,7 +9,7 @@ import { ContributionTypeEnum } from 'src/contributions/entities/enums/contribut
 import { SocietyHeadsContributions } from 'src/contributions/entities/societyhead.contribution.entity';
 import { TeachersContributions } from 'src/contributions/entities/teacher.contribution.entity';
 import { Student } from 'src/students/entities/students.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ContributionDto } from './dto/contribution.dto';
 import { DeleteContributionInput } from './dto/delete-contribution.input';
 import { FilterAllContributionDto } from './dto/filter-contributions.input';
@@ -206,27 +206,33 @@ export class ContributionsService {
    * @param deleteContributions
    * @returns Message that user successfully deleted
    */
-  async delete(
-    deleteContributionInput: DeleteContributionInput,
-  ): Promise<void> {
+  async delete(deleteContributions: DeleteContributionInput[]): Promise<void> {
     try {
       const { contributionId, contributionType, studentId } =
-        deleteContributionInput;
+        deleteContributions[0];
       switch (contributionType) {
         case ContributionTypeEnum.SOCIETY_HEAD:
-          this.societyRepo.delete({ studentId, id: contributionId });
+          await this.societyRepo.delete({
+            studentId,
+            id: In(deleteContributions.map((dc) => dc.contributionId)),
+          });
           break;
         case ContributionTypeEnum.CAREER_COUNSELLOR:
-          this.counsellorRepo.delete({ studentId, id: contributionId });
+          await this.counsellorRepo.delete({
+            studentId,
+            id: In(deleteContributions.map((dc) => dc.contributionId)),
+          });
           break;
         case ContributionTypeEnum.TEACHER:
-          this.teachersRepo.delete({ studentId, id: contributionId });
+          await this.teachersRepo.delete({
+            studentId,
+            id: In(deleteContributions.map((dc) => dc.contributionId)),
+          });
           break;
       }
     } catch (error) {
       throw new BadRequestException(error);
     }
-    return null;
   }
 
   /**

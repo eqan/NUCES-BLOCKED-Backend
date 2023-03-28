@@ -53,11 +53,11 @@ export class ContributionsResolver {
     defaultValue: {},
   })
   async delete(
-    @Args('DeleteContributionInput')
-    deleteContributionInput: DeleteContributionInput,
+    @Args('DeleteContributionInput', { type: () => [DeleteContributionInput] })
+    deleteContributionInputs: DeleteContributionInput[],
   ): Promise<void> {
     try {
-      return await this.contributionService.delete(deleteContributionInput);
+      return await this.contributionService.delete(deleteContributionInputs);
     } catch (error) {
       throw new BadRequestException(error);
     }
