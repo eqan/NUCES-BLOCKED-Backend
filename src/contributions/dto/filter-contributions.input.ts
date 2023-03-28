@@ -8,11 +8,10 @@ export class FilterAllContributionDto extends PaginationParam {
   @Field(() => ContributionTypeEnum)
   contributionType: ContributionTypeEnum;
 
-  @IsOptional()
-  @Field(() => String, { nullable: true })
-  studentId?: string;
+  @Field(() => String)
+  contributor: string;
 
   @IsOptional()
   @Field(() => String, { nullable: true })
-  contributor?: string;
+  studentId?: string;
 }

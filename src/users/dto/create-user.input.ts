@@ -17,6 +17,10 @@ export class CreateUserInput {
   @Field()
   password: string;
 
+  @IsString({ message: 'Subtype must be a String' })
+  @Field()
+  subType: string;
+
   @IsNotEmpty()
   @IsEnum(UserTypes)
   @Field(() => UserTypes)

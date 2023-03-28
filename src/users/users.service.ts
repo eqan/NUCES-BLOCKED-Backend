@@ -10,7 +10,6 @@ import { LoginUserInput } from './dto/logged-user.input';
 import { UpdateUsersInput } from './dto/update-user.input';
 import { Users } from './entities/users.entity';
 import * as bcrypt from 'bcrypt';
-import { UserTypes } from './entities/enum/user.types.enums';
 
 @Injectable()
 export class UsersService {
@@ -64,16 +63,15 @@ export class UsersService {
    * @param email
    * @returns userData
    */
-  async showUserType(email: string): Promise<UserTypes> {
-    try {
-      const { type } = await this.usersRepo.findOneBy({ email });
-      console.log(type);
-      if (!type) return null;
-      return type;
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
+  // async showUserType(email: string): Promise<GetUserType> {
+  //   try {
+  //     const { type, subType } = await this.usersRepo.findOneBy({ email });
+  //     if (!type) return null;
+  //     return { type, subType };
+  //   } catch (error) {
+  //     throw new BadRequestException(error);
+  //   }
+  // }
 
   /**
    * Login User and update user signature and message if required
@@ -149,20 +147,4 @@ export class UsersService {
       throw new BadRequestException(error);
     }
   }
-  // mapStringToEnum(type: string): UserTypes {
-  //   switch (type) {
-  //     case 'ADMIN':
-  //       return UserTypes.ADMIN;
-  //     case 'TEACHER':
-  //       return UserTypes.ADMIN;
-  //     case 'CAREER_COUNSELLOR':
-  //       return UserTypes.ADMIN;
-  //     case 'SOCIETY_HEAD':
-  //       return UserTypes.SOCIETY_HEAD;
-  //     case 'REGULAR_USER':
-  //       return UserTypes.REGULAR_USER;
-  //     default:
-  //       return null;
-  //   }
-  // }
 }

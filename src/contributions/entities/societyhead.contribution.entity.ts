@@ -48,7 +48,7 @@ export abstract class SocietyHeadsContributions extends Timestamps {
 
   @BeforeInsert()
   @BeforeUpdate()
-  checkCGPA() {
+  checkContributionType() {
     if (!this.societyHeadContributionType)
       throw new Error('No contribution type was defined!');
   }

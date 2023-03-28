@@ -47,7 +47,7 @@ export abstract class CareerCounsellorContributions extends Timestamps {
 
   @BeforeInsert()
   @BeforeUpdate()
-  checkCGPA() {
+  checkContributionType() {
     if (!this.careerCounsellorContributionType)
       throw new Error('No contribution type was defined!');
   }

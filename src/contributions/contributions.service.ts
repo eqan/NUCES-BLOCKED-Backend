@@ -4,13 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { toNumber } from 'lodash';
 import { CareerCounsellorContributions } from 'src/contributions/entities/careercounsellor.contribution.entity';
 import { ContributionTypeEnum } from 'src/contributions/entities/enums/contributions.enum';
 import { SocietyHeadsContributions } from 'src/contributions/entities/societyhead.contribution.entity';
 import { TeachersContributions } from 'src/contributions/entities/teacher.contribution.entity';
 import { Student } from 'src/students/entities/students.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ContributionDto } from './dto/contribution.dto';
 import { DeleteContributionInput } from './dto/delete-contribution.input';
 import { FilterAllContributionDto } from './dto/filter-contributions.input';
@@ -20,8 +19,6 @@ import { GetContributionInput } from './dto/get-contribution.input';
 @Injectable()
 export class ContributionsService {
   constructor(
-    // @InjectRepository(AdminContributions)
-    // private adminRepo: Repository<AdminContributions>,
     @InjectRepository(TeachersContributions)
     private teachersRepo: Repository<TeachersContributions>,
     @InjectRepository(SocietyHeadsContributions)
@@ -35,19 +32,11 @@ export class ContributionsService {
    * @params createUse
    * @return Contributions
    */
-  async createUpdate(contributionInput: ContributionDto): Promise<Student> {
+  async create(contributionInput: ContributionDto): Promise<Student> {
     try {
       let contribution = null;
       const { contributionType, ...rest } = contributionInput;
       switch (contributionType.contributionType) {
-        // case ContributionTypeEnum.ADMIN:
-        //   contribution = this.adminRepo.create({
-        //     id: rest.studentId,
-        //     contribution: toNumber(rest.contribution),
-        //     contributor: rest.contributor,
-        //     adminContributionType: contributionType.adminContributionType,
-        //   });
-        //   return await this.adminRepo.save(contribution);
         case ContributionTypeEnum.SOCIETY_HEAD:
           contribution = this.societyRepo.create({
             studentId: rest.studentId,
@@ -57,7 +46,13 @@ export class ContributionsService {
             societyHeadContributionType:
               contributionType.societyHeadContributionType,
           });
-          return await this.societyRepo.save(contribution);
+          await this.counsellorRepo.save(contribution);
+          return await this.show({
+            contributionId: contribution.id,
+            contributionType: ContributionTypeEnum.SOCIETY_HEAD,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
         case ContributionTypeEnum.CAREER_COUNSELLOR:
           contribution = this.counsellorRepo.create({
             studentId: rest.studentId,
@@ -67,7 +62,13 @@ export class ContributionsService {
             careerCounsellorContributionType:
               contributionType.careerCounsellorContributionType,
           });
-          return await this.counsellorRepo.save(contribution);
+          await this.counsellorRepo.save(contribution);
+          return await this.show({
+            contributionId: contribution.id,
+            contributionType: ContributionTypeEnum.CAREER_COUNSELLOR,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
         case ContributionTypeEnum.TEACHER:
           contribution = this.teachersRepo.create({
             studentId: rest.studentId,
@@ -76,7 +77,81 @@ export class ContributionsService {
             contributor: rest.contributor,
             teacherContributionType: contributionType.teacherContributionType,
           });
-          return await this.teachersRepo.save(contribution);
+          await this.teachersRepo.save(contribution);
+          return await this.show({
+            contributionId: contribution.id,
+            contributionType: ContributionTypeEnum.TEACHER,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
+      }
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Upddate Contribution
+   * @params UpdateContribution
+   * @return Contributions
+   */
+  async update(contributionInput: ContributionDto): Promise<Student> {
+    try {
+      const { contributionType, ...rest } = contributionInput;
+      switch (contributionType.contributionType) {
+        case ContributionTypeEnum.SOCIETY_HEAD:
+          await this.societyRepo.update(
+            { id: rest.id },
+            {
+              studentId: rest.studentId,
+              contribution: rest.contribution,
+              title: rest.title,
+              contributor: rest.contributor,
+              societyHeadContributionType:
+                contributionType.societyHeadContributionType,
+            },
+          );
+          return await this.show({
+            contributionId: rest.id,
+            contributionType: ContributionTypeEnum.SOCIETY_HEAD,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
+        case ContributionTypeEnum.CAREER_COUNSELLOR:
+          await this.counsellorRepo.update(
+            { id: rest.id },
+            {
+              studentId: rest.studentId,
+              contribution: rest.contribution,
+              title: rest.title,
+              contributor: rest.contributor,
+              careerCounsellorContributionType:
+                contributionType.careerCounsellorContributionType,
+            },
+          );
+          return await this.show({
+            contributionId: rest.id,
+            contributionType: ContributionTypeEnum.CAREER_COUNSELLOR,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
+        case ContributionTypeEnum.TEACHER:
+          await this.teachersRepo.update(
+            { id: rest.id },
+            {
+              studentId: rest.studentId,
+              contribution: rest.contribution,
+              title: rest.title,
+              contributor: rest.contributor,
+              teacherContributionType: contributionType.teacherContributionType,
+            },
+          );
+          return await this.show({
+            contributionId: rest.id,
+            contributionType: ContributionTypeEnum.TEACHER,
+            contributor: rest.contributor,
+            studentId: rest.studentId,
+          });
       }
     } catch (error) {
       throw new BadRequestException(error);
@@ -98,13 +173,6 @@ export class ContributionsService {
       const { contributionId, contributionType, studentId, contributor } =
         getContributionInput;
       switch (contributionType) {
-        // case ContributionTypeEnum.ADMIN:
-        // studentInfo.AdminContributions = await this.adminRepo.findOneByOrFail(
-        //   {
-        //     id: studentId,
-        //     contributor,
-        //   },
-        // );
         case ContributionTypeEnum.SOCIETY_HEAD:
           studentInfo.SocietyHeadsContributions[0] =
             await this.societyRepo.findOneByOrFail({
@@ -138,30 +206,33 @@ export class ContributionsService {
    * @param deleteContributions
    * @returns Message that user successfully deleted
    */
-  async delete(
-    deleteContributionInput: DeleteContributionInput,
-  ): Promise<void> {
+  async delete(deleteContributions: DeleteContributionInput[]): Promise<void> {
     try {
       const { contributionId, contributionType, studentId } =
-        deleteContributionInput;
+        deleteContributions[0];
       switch (contributionType) {
-        // case ContributionTypeEnum.ADMIN:
-        //   this.adminRepo.delete({ id: studentId });
-        //   break;
         case ContributionTypeEnum.SOCIETY_HEAD:
-          this.societyRepo.delete({ studentId, id: contributionId });
+          await this.societyRepo.delete({
+            studentId,
+            id: In(deleteContributions.map((dc) => dc.contributionId)),
+          });
           break;
         case ContributionTypeEnum.CAREER_COUNSELLOR:
-          this.counsellorRepo.delete({ studentId, id: contributionId });
+          await this.counsellorRepo.delete({
+            studentId,
+            id: In(deleteContributions.map((dc) => dc.contributionId)),
+          });
           break;
         case ContributionTypeEnum.TEACHER:
-          this.teachersRepo.delete({ studentId, id: contributionId });
+          await this.teachersRepo.delete({
+            studentId,
+            id: In(deleteContributions.map((dc) => dc.contributionId)),
+          });
           break;
       }
     } catch (error) {
       throw new BadRequestException(error);
     }
-    return null;
   }
 
   /**
@@ -176,32 +247,20 @@ export class ContributionsService {
       const { page = 1, limit = 20, ...rest } = filterDto;
       let query = null;
       switch (rest.contributionType) {
-        // case ContributionTypeEnum.ADMIN:
-        // query = this.adminRepo
-        //   .createQueryBuilder('admin')
-        //   .leftJoinAndSelect('admin.student', 'student')
-        //   .where('admin.id LIKE :id OR student.name LIKE :name', {
-        //     id: `%${rest.studentId}%`,
-        //     name: `%${rest.studentId}%`,
-        //   })
-        //   .skip((page - 1) * limit || 0)
-        //   .take(limit || 10);
-
-        // return {
-        //   adminContributions: await query.getMany(),
-        //   total: await query.getCount(),
-        // };
         case ContributionTypeEnum.SOCIETY_HEAD:
           query = this.societyRepo
             .createQueryBuilder('society')
             .leftJoinAndSelect('society.student', 'student')
-            .where('society.id LIKE :id OR student.name LIKE :name', {
-              studentId: `%${rest.studentId}%`,
-              name: `%${rest.studentId}%`,
-            })
+            .where(
+              '(society.studentId LIKE :studentId OR student.name LIKE :name) AND society.contributor = :contributor',
+              {
+                studentId: `%${rest.studentId}%`,
+                name: `%${rest.studentId}%`,
+                contributor: rest.contributor,
+              },
+            )
             .skip((page - 1) * limit || 0)
             .take(limit || 10);
-
           return {
             societyHeadsContributions: await query.getMany(),
             total: await query.getCount(),
@@ -211,10 +270,14 @@ export class ContributionsService {
           query = this.counsellorRepo
             .createQueryBuilder('careercounsellor')
             .leftJoinAndSelect('careercounsellor.student', 'student')
-            .where('careercounsellor.id LIKE :id OR student.name LIKE :name', {
-              studentId: `%${rest.studentId}%`,
-              name: `%${rest.studentId}%`,
-            })
+            .where(
+              '(careercounsellor.studentId LIKE :studentId OR student.name LIKE :name) AND careercounsellor.contributor = :contributor',
+              {
+                studentId: `%${rest.studentId}%`,
+                name: `%${rest.studentId}%`,
+                contributor: rest.contributor,
+              },
+            )
             .skip((page - 1) * limit || 0)
             .take(limit || 10);
 
@@ -227,10 +290,14 @@ export class ContributionsService {
           query = this.teachersRepo
             .createQueryBuilder('teacher')
             .leftJoinAndSelect('teacher.student', 'student')
-            .where('teacher.id LIKE :id OR student.name LIKE :name', {
-              studentId: `%${rest.studentId}%`,
-              name: `%${rest.studentId}%`,
-            })
+            .where(
+              '(teacher.studentId LIKE :studentId OR student.name LIKE :name) AND teacher.contributor = :contributor',
+              {
+                studentId: `%${rest.studentId}%`,
+                name: `%${rest.studentId}%`,
+                contributor: rest.contributor,
+              },
+            )
             .skip((page - 1) * limit || 0)
             .take(limit || 10);
 

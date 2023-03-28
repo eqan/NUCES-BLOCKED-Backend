@@ -5,6 +5,7 @@ import { CreateUserInput } from './dto/create-user.input';
 import { DeleteUsersInput } from './dto/delete-users.input';
 import { FilterUserDto } from './dto/filter.users.dto';
 import { GetAllUsers } from './dto/get-all-users.dto';
+import { GetUserType } from './dto/get-user-type.output.dto';
 import { LoginUserInput } from './dto/logged-user.input';
 import { LoggedUserOutput } from './dto/logged-user.output';
 import { UpdateUsersInput } from './dto/update-user.input';
@@ -101,14 +102,14 @@ export class UsersResolver {
    * @returns User Type
    */
   // @UseGuards(JwtAuthGuard)
-  @Query(() => UserTypes, { name: 'GetUserTypeByUserEmail', nullable: true })
-  async showUserType(@Args('userEmail') id: string): Promise<UserTypes> {
-    try {
-      return await this.userService.showUserType(id);
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
+  // @Query(() => GetUserType, { name: 'GetUserTypeByUserEmail', nullable: true })
+  // async showUserType(@Args('userEmail') id: string): Promise<GetUserType> {
+  //   try {
+  //     return await this.userService.showUserType(id);
+  //   } catch (error) {
+  //     throw new BadRequestException(error);
+  //   }
+  // }
 
   /**
    * Get ALl Users

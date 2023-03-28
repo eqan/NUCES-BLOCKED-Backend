@@ -35,4 +35,9 @@ export class UpdateUsersInput {
   @IsUrl({ message: 'Must be a valid URL' })
   @Field({ nullable: true })
   imgUrl: string;
+
+  @IsOptional()
+  @IsString({ message: 'Subtype must be a String' })
+  @Field({ nullable: true })
+  subType: string;
 }

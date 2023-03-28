@@ -1,27 +1,11 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { AdminContributionEnum } from 'src/contributions/entities/enums/admin.contribution.enums';
 import { CareerCounsellorContributionEnum } from 'src/contributions/entities/enums/careercounsellor.contribution.enums';
 import { ContributionTypeEnum } from 'src/contributions/entities/enums/contributions.enum';
 import { SocietyHeadContributionEnum } from 'src/contributions/entities/enums/societyhead.contribution.enums';
 import { TeacherContributionEnum } from 'src/contributions/entities/enums/teacher.contribution.enums';
-
-// @ObjectType('AdminContribution')
-// @InputType('AdminContribution')
-// export class AdminContribution {
-//   @Field(() => ContributionTypeEnum, {
-//     defaultValue: ContributionTypeEnum.ADMIN,
-//   })
-//   @Type(() => () => ContributionTypeEnum.ADMIN)
-//   readonly contributionType: ContributionTypeEnum.ADMIN;
-
-//   @Field(() => AdminContributionEnum, {
-//     defaultValue: AdminContributionEnum.CGPA,
-//   })
-//   @Type(() => () => AdminContributionEnum.CGPA)
-//   adminContributionType: AdminContributionEnum.CGPA;
-// }
 
 @ObjectType('CareerCounsellorContribution')
 @InputType('CareerCounsellorContribution')
@@ -112,7 +96,6 @@ export class ContributionDto {
     discriminator: {
       property: 'type',
       subTypes: [
-        // { value: AdminContribution, name: ContributionTypeEnum.ADMIN },
         {
           value: SocietyHeadContribution,
           name: ContributionTypeEnum.SOCIETY_HEAD,
@@ -128,19 +111,27 @@ export class ContributionDto {
   contributionType: ContributionTypeInput;
 
   @IsOptional()
-  @Field({ nullable: true })
   @IsString()
-  title?: string;
+  @Field({ nullable: true })
+  id?: string;
 
   @Field()
+  @IsNotEmpty()
+  @IsString()
+  title: string;
+
+  @Field()
+  @IsNotEmpty()
   @IsString()
   contribution: string;
 
   @Field()
+  @IsNotEmpty()
   @IsString()
   contributor: string;
 
   @Field()
+  @IsNotEmpty()
   @IsString()
   studentId: string;
 }
