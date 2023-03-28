@@ -3,8 +3,8 @@
 ## Tech Stack
 
 - <a href="https://docs.nestjs.com/" target="_blank">NESTJS<a>
-- 
-- 
+- [T]()ypeORM
+- GraphQl
 - [PostGresQl]()
 
 ## [Environment]()
