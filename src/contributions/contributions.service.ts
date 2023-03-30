@@ -46,7 +46,7 @@ export class ContributionsService {
             societyHeadContributionType:
               contributionType.societyHeadContributionType,
           });
-          await this.counsellorRepo.save(contribution);
+          await this.societyRepo.save(contribution);
           return await this.show({
             contributionId: contribution.id,
             contributionType: ContributionTypeEnum.SOCIETY_HEAD,
@@ -180,6 +180,7 @@ export class ContributionsService {
               studentId,
               contributor,
             });
+          break;
         case ContributionTypeEnum.CAREER_COUNSELLOR:
           studentInfo.CareerCounsellorContributions[0] =
             await this.counsellorRepo.findOneByOrFail({
@@ -187,6 +188,7 @@ export class ContributionsService {
               studentId,
               contributor,
             });
+          break;
         case ContributionTypeEnum.TEACHER:
           studentInfo.TeachersContributions[0] =
             await this.teachersRepo.findOneByOrFail({
@@ -194,6 +196,7 @@ export class ContributionsService {
               studentId,
               contributor,
             });
+          break;
       }
       return studentInfo;
     } catch (error) {

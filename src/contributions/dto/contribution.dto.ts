@@ -1,7 +1,6 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { AdminContributionEnum } from 'src/contributions/entities/enums/admin.contribution.enums';
 import { CareerCounsellorContributionEnum } from 'src/contributions/entities/enums/careercounsellor.contribution.enums';
 import { ContributionTypeEnum } from 'src/contributions/entities/enums/contributions.enum';
 import { SocietyHeadContributionEnum } from 'src/contributions/entities/enums/societyhead.contribution.enums';
@@ -64,28 +63,24 @@ export class ContributionTypeInput {
 
   @Field(() => TeacherContributionEnum, {
     nullable: true,
+    defaultValue: null,
   })
   @Type(() => () => TeacherContributionEnum)
   teacherContributionType?: TeacherContributionEnum;
 
   @Field(() => SocietyHeadContributionEnum, {
     nullable: true,
+    defaultValue: null,
   })
   @Type(() => () => SocietyHeadContributionEnum)
   societyHeadContributionType?: SocietyHeadContributionEnum;
 
   @Field(() => CareerCounsellorContributionEnum, {
     nullable: true,
+    defaultValue: null,
   })
   @Type(() => () => CareerCounsellorContributionEnum)
   careerCounsellorContributionType?: CareerCounsellorContributionEnum;
-
-  @Field(() => AdminContributionEnum, {
-    defaultValue: AdminContributionEnum.CGPA,
-    nullable: true,
-  })
-  @Type(() => () => AdminContributionEnum.CGPA)
-  adminContributionType?: AdminContributionEnum.CGPA;
 }
 
 @ObjectType('ContributionDto')

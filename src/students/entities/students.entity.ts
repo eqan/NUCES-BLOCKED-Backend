@@ -61,12 +61,6 @@ export class Student extends Timestamps {
   @OneToOne(() => Certificate, (certificate) => certificate.id)
   certificate: Certificate;
 
-  // @IsOptional()
-  // @ValidateNested()
-  // @Field(() => AdminContributions, { nullable: true })
-  // @OneToOne(() => AdminContributions, (contribution) => contribution.id)
-  // AdminContributions: AdminContributions;
-
   @IsOptional()
   @ValidateNested()
   @Field(() => [CareerCounsellorContributions], { nullable: true })
@@ -74,7 +68,7 @@ export class Student extends Timestamps {
     () => CareerCounsellorContributions,
     (contributions) => contributions.studentId,
   )
-  CareerCounsellorContributions: CareerCounsellorContributions[];
+  CareerCounsellorContributions?: CareerCounsellorContributions[];
 
   @IsOptional()
   @ValidateNested()
@@ -83,7 +77,7 @@ export class Student extends Timestamps {
     () => TeachersContributions,
     (contributions) => contributions.studentId,
   )
-  TeachersContributions: TeachersContributions[];
+  TeachersContributions?: TeachersContributions[];
 
   @IsOptional()
   @ValidateNested()
@@ -92,7 +86,7 @@ export class Student extends Timestamps {
     () => SocietyHeadsContributions,
     (contributions) => contributions.studentId,
   )
-  SocietyHeadsContributions: SocietyHeadsContributions[];
+  SocietyHeadsContributions?: SocietyHeadsContributions[];
 
   @BeforeInsert()
   @BeforeUpdate()
