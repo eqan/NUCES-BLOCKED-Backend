@@ -1,7 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CronJob } from 'cron';
 import { DeployedContracts } from 'src/contracts/deployedAddresses';
@@ -87,6 +87,7 @@ export class CertificatesService {
                 name: data.name,
                 email: data.email,
                 cgpa: '0',
+                batch: '0000',
               });
             }
             try {

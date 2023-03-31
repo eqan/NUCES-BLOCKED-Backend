@@ -13,6 +13,7 @@ import { Contract } from '@ethersproject/contracts';
 import { DeployedContracts } from 'src/contracts/deployedAddresses';
 import * as ABI from '../contracts/SemesterStore.json';
 import { CronJob } from 'cron';
+import { BigNumber } from '@ethersproject/bignumber';
 
 @Injectable()
 export class SemesterResultService {
@@ -71,16 +72,18 @@ export class SemesterResultService {
             toSemesterIndex,
             { from: process.env.CONTRACT_OWNER },
           );
+
         for (const semester of semesters[0]) {
+          const semesterYear = BigNumber.from(semester['year']).toString();
           const data = {
             id: semester['semesterType'] + '_' + semester['year'].toNumber(),
             url: semester['url'],
             type: semester['semesterType'],
-            year: semester['year'],
+            year: semesterYear,
           };
           console.log(data);
           try {
-            if (data.year != 0) {
+            if (parseInt(semesterYear) != 0) {
               await this.semesterRepo.save(data);
             }
           } catch (error) {

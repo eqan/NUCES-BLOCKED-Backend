@@ -26,6 +26,7 @@ export abstract class CareerCounsellorContributions extends Timestamps {
   @Field()
   @Column('text')
   title: string;
+
   @Field(() => CareerCounsellorContributionEnum)
   @Column({
     enum: CareerCounsellorContributionEnum,

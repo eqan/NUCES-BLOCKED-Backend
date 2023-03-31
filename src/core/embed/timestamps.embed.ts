@@ -7,19 +7,15 @@
  */
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IsOptional } from 'class-validator';
-import { Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @ObjectType()
 export class Timestamps {
-  @CreateDateColumn({
-    default: () => "CURRENT_TIMESTAMP(6) AT TIME ZONE 'Asia/Karachi'",
-  })
+  @CreateDateColumn()
   public createdAt!: Date;
 
   @IsOptional()
   @Field()
-  @UpdateDateColumn({
-    default: () => "CURRENT_TIMESTAMP(6) AT TIME ZONE 'Asia/Karachi'",
-  })
+  @UpdateDateColumn()
   public updatedAt!: Date;
 }
