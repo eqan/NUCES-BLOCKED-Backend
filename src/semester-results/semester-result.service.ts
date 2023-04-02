@@ -26,23 +26,35 @@ export class SemesterResultService {
     private semesterRepo: Repository<SemesterResult>,
     private readonly schedulerRegistry: SchedulerRegistry,
   ) {
-    this.job = new CronJob(
-      CronExpression.EVERY_MINUTE,
-      this.dataFetchingFromBlockchain.bind(this),
-    );
-    this.schedulerRegistry.addCronJob(this.jobName, this.job);
-    this.logger.log(`Job ${this.jobName} initialized to run every minute`);
-    this.startProcess();
+    try {
+      this.job = new CronJob(
+        CronExpression.EVERY_MINUTE,
+        this.dataFetchingFromBlockchain.bind(this),
+      );
+      this.schedulerRegistry.addCronJob(this.jobName, this.job);
+      this.logger.log(`Job ${this.jobName} initialized to run every minute`);
+      this.startProcess();
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 
   startProcess() {
-    this.job.start();
-    this.logger.log(`Job ${this.jobName} started`);
+    try {
+      this.job.start();
+      this.logger.log(`Job ${this.jobName} started`);
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 
   stopProcess() {
-    this.job.stop();
-    this.logger.log(`Job ${this.jobName} stopped`);
+    try {
+      this.job.stop();
+      this.logger.log(`Job ${this.jobName} stopped`);
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 
   // Cron job implementation for automatically retrieving and storing data from blockchain into db
