@@ -12,6 +12,11 @@ import { UserTypes } from '../entities/enum/user.types.enums';
 @InputType()
 export class UpdateUsersInput {
   @IsNotEmpty()
+  @IsString()
+  @Field()
+  id: string;
+
+  @IsOptional()
   @IsEmail()
   @Field()
   email: string;

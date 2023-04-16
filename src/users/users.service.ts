@@ -97,8 +97,7 @@ export class UsersService {
    */
   async update(updateUsersInput: UpdateUsersInput): Promise<Users> {
     try {
-      const { email, ...rest } = updateUsersInput;
-      const { id } = await this.usersRepo.findOne({ where: { email } });
+      const { id, ...rest } = updateUsersInput;
       await this.usersRepo.update({ id }, rest);
       return await this.usersRepo.findOne({ where: { id } });
     } catch (error) {
