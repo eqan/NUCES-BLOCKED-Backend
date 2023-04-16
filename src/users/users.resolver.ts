@@ -9,7 +9,6 @@ import { GetUserType } from './dto/get-user-type.output.dto';
 import { LoginUserInput } from './dto/logged-user.input';
 import { LoggedUserOutput } from './dto/logged-user.output';
 import { UpdateUsersInput } from './dto/update-user.input';
-import { UserTypes } from './entities/enum/user.types.enums';
 import { Users } from './entities/users.entity';
 import { UsersService } from './users.service';
 
@@ -95,21 +94,6 @@ export class UsersResolver {
       throw new BadRequestException(error);
     }
   }
-
-  /**
-   * Get User Type By email
-   * @param id
-   * @returns User Type
-   */
-  // @UseGuards(JwtAuthGuard)
-  // @Query(() => GetUserType, { name: 'GetUserTypeByUserEmail', nullable: true })
-  // async showUserType(@Args('userEmail') id: string): Promise<GetUserType> {
-  //   try {
-  //     return await this.userService.showUserType(id);
-  //   } catch (error) {
-  //     throw new BadRequestException(error);
-  //   }
-  // }
 
   /**
    * Get ALl Users

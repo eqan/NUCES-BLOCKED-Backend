@@ -59,21 +59,6 @@ export class UsersService {
   }
 
   /**
-   * Get Data By User Address
-   * @param email
-   * @returns userData
-   */
-  // async showUserType(email: string): Promise<GetUserType> {
-  //   try {
-  //     const { type, subType } = await this.usersRepo.findOneBy({ email });
-  //     if (!type) return null;
-  //     return { type, subType };
-  //   } catch (error) {
-  //     throw new BadRequestException(error);
-  //   }
-  // }
-
-  /**
    * Login User and update user signature and message if required
    * @param LoggedUserInput: message, signature, address
    * @returns access token
