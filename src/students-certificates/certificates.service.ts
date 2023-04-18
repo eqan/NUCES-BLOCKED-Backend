@@ -90,6 +90,8 @@ export class CertificatesService {
             name: certificate['name'],
             email: certificate['email'],
             url: certificate['url'],
+            batch: certificate['batch'],
+            cgpa: certificate['cgpa'],
           };
           console.log(data);
           try {
@@ -98,8 +100,8 @@ export class CertificatesService {
                 id: data.id,
                 name: data.name,
                 email: data.email,
-                cgpa: '0',
-                batch: '0000',
+                cgpa: data.cgpa,
+                batch: data.batch,
               });
             }
             try {
