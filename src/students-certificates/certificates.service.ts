@@ -13,6 +13,7 @@ import { FilterCertificateInput } from './dto/filter.certificates.dto';
 import { GetAllCertificates } from './dto/get-all-certificates.dto';
 import { UpdateCertificatesInput } from './dto/update-certificates.input';
 import { Certificate } from './entities/certificates.entity';
+import { EligibilityStatusEnum } from 'src/students/entities/enums/status.enum';
 
 @Injectable()
 export class CertificatesService {
@@ -102,6 +103,7 @@ export class CertificatesService {
                 email: data.email,
                 cgpa: data.cgpa,
                 batch: data.batch,
+                eligibilityStatus: EligibilityStatusEnum.ALREADY_PUBLISHED,
               });
             }
             try {

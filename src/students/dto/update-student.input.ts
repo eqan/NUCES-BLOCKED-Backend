@@ -1,6 +1,7 @@
 import { Optional } from '@nestjs/common';
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
+import { EligibilityStatusEnum } from '../entities/enums/status.enum';
 
 @InputType()
 export class UpdateStudentInput {
@@ -28,4 +29,9 @@ export class UpdateStudentInput {
   @IsString()
   @Field()
   batch: string;
+
+  @IsOptional()
+  @IsEnum(EligibilityStatusEnum)
+  @Field(() => EligibilityStatusEnum)
+  eligibilityStatus: EligibilityStatusEnum;
 }
