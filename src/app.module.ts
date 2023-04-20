@@ -28,20 +28,10 @@ import { UsersModule } from './users/users.module';
         path: join(process.cwd(), 'src/graphqlFile.ts'),
       },
     }),
+
+    // Allows nestjs/schedule on all modules
     ScheduleModule.forRoot(),
 
-    // BullModule.forRootAsync({
-    //   useClass: BullConfig,
-    // }),
-    /**
-     * Redis Module
-     * Redis Configuration
-     */
-    // RedisModule.forRootAsync({
-    //   useFactory: (configService: ConfigService) => configService.get('redis'), // or use async method
-    //   //useFactory: async (configService: ConfigService) => configService.get('redis'),
-    //   inject: [ConfigService],
-    // }),
     /**
      * TypeORM Module
      * TypeORM Configurations
@@ -55,6 +45,7 @@ import { UsersModule } from './users/users.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
     // Modules
     UsersModule,
     StudentsModule,

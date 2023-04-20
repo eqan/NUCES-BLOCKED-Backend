@@ -5,7 +5,6 @@ import { Student } from 'src/students/entities/students.entity';
 import {
   BeforeInsert,
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
@@ -33,7 +32,7 @@ export class Certificate extends Timestamps {
   student: Student;
 
   @BeforeInsert()
-  setId() {
+  setid() {
     if (!this.id) {
       this.id = this.student.id;
     }

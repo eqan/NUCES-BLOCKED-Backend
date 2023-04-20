@@ -20,6 +20,7 @@ import {
 import { CareerCounsellorContributions } from '../../contributions/entities/careercounsellor.contribution.entity';
 import { SocietyHeadsContributions } from '../../contributions/entities/societyhead.contribution.entity';
 import { TeachersContributions } from '../../contributions/entities/teacher.contribution.entity';
+import { EligibilityStatusEnum } from './enums/status.enum';
 
 /**Create students table in database
  *
@@ -62,6 +63,16 @@ export class Student extends Timestamps {
   certificate: Certificate;
 
   @IsOptional()
+  @Field()
+  @Column({
+    type: 'enum',
+    enum: EligibilityStatusEnum,
+    enumName: 'EligibilityStatusEnum',
+    default: EligibilityStatusEnum.NOT_ELIGIBLE,
+  })
+  eligibilityStatus?: EligibilityStatusEnum;
+
+  @IsOptional()
   @ValidateNested()
   @Field(() => [CareerCounsellorContributions], { nullable: true })
   @OneToMany(
@@ -94,5 +105,12 @@ export class Student extends Timestamps {
     if (parseFloat(this.cgpa) >= 0 && parseFloat(this.cgpa) <= 4)
       this.cgpa = this.cgpa;
     else throw new Error('Invalid CGPA value. It must be between 0 and 4.0');
+  }
+  checkEligibilityCriteria() {
+    if (
+      this.eligibilityStatus == EligibilityStatusEnum.NOT_ELIGIBLE &&
+      parseFloat(this.batch) + 3 <= new Date().getFullYear()
+    )
+      this.eligibilityStatus = EligibilityStatusEnum.ELIGIBLE;
   }
 }
