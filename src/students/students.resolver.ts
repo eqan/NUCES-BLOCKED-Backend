@@ -11,14 +11,14 @@ import { Student } from './entities/students.entity';
 import { StudentsService } from './students.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-@Resolver(() => Student) // specify the object type for this resolver
+@Resolver(() => Student)
 export class StudentsResolver extends BaseProvider<Student> {
   constructor(private readonly studentService: StudentsService) {
     super();
   }
 
   @Cron(CronExpression.EVERY_YEAR)
-  async handleCron() {
+  async automaticEligibilityStatusUpdatingCron() {
     try {
       await this.studentService.updateEligibilityStatusForAllStudents();
     } catch (error) {
@@ -27,7 +27,7 @@ export class StudentsResolver extends BaseProvider<Student> {
   }
 
   @Mutation(() => String, { name: 'UpdateEligibilityStatusForAllStudents' })
-  async updateEligibilityStatusForAllStudents() {
+  async updateEligibilityStatusForAllStudents(): Promise<string> {
     try {
       await this.studentService.updateEligibilityStatusForAllStudents();
       return 'Students eligibity status updated!';

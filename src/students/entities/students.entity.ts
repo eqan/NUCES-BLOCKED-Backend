@@ -109,7 +109,7 @@ export class Student extends Timestamps {
   checkEligibilityCriteria() {
     if (
       this.eligibilityStatus == EligibilityStatusEnum.NOT_ELIGIBLE &&
-      parseFloat(this.batch) + 3 <= new Date().getFullYear()
+      parseFloat(this.batch) + 4 <= new Date().getFullYear()
     )
       this.eligibilityStatus = EligibilityStatusEnum.ELIGIBLE;
   }

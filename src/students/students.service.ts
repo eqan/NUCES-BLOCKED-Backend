@@ -35,7 +35,7 @@ export class StudentsService {
       });
       for (const student of students) {
         const batchYear = parseInt(student.batch);
-        if (batchYear + 3 <= currentYear) {
+        if (batchYear + 4 <= currentYear) {
           student.eligibilityStatus = EligibilityStatusEnum.ELIGIBLE;
           await this.studentsRepo.save(student);
         }
