@@ -22,7 +22,7 @@ export class UpdateStudentInput {
 
   @IsOptional()
   @IsString()
-  @Field()
+  @Field({ nullable: true })
   cgpa: string;
 
   @IsOptional()

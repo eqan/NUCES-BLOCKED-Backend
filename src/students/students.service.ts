@@ -81,8 +81,8 @@ export class StudentsService {
    */
   async update(updateStudentsInput: UpdateStudentInput): Promise<Student> {
     try {
-      const { id, email, name, cgpa } = updateStudentsInput;
-      await this.studentsRepo.update({ id }, { email, name, cgpa });
+      const { id, ...rest } = updateStudentsInput;
+      await this.studentsRepo.update({ id }, rest);
       return this.show(updateStudentsInput.id);
     } catch (error) {
       throw new BadRequestException(error);
