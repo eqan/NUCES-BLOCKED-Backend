@@ -5,6 +5,7 @@ export enum EligibilityStatusEnum {
   ELIGIBLE = 'ELIGIBLE',
   ALREADY_PUBLISHED = 'ALREADY_PUBLISHED',
   NOT_ALLOWED = 'NOT_ALLOWED',
+  IN_PROGRESS = 'IN_PROGRESS',
 }
 
 registerEnumType(EligibilityStatusEnum, {

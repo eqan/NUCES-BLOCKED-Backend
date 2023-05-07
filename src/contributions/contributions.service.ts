@@ -15,6 +15,7 @@ import { DeleteContributionInput } from './dto/delete-contribution.input';
 import { FilterAllContributionDto } from './dto/filter-contributions.input';
 import { GetAllContributions } from './dto/get-all-contributions.dto';
 import { GetContributionInput } from './dto/get-contribution.input';
+import { EligibilityStatusEnum } from 'src/students/entities/enums/status.enum';
 
 @Injectable()
 export class ContributionsService {
@@ -211,8 +212,7 @@ export class ContributionsService {
    */
   async delete(deleteContributions: DeleteContributionInput[]): Promise<void> {
     try {
-      const { contributionId, contributionType, studentId } =
-        deleteContributions[0];
+      const { contributionType, studentId } = deleteContributions[0];
       switch (contributionType) {
         case ContributionTypeEnum.SOCIETY_HEAD:
           await this.societyRepo.delete({
@@ -312,6 +312,53 @@ export class ContributionsService {
         default:
           return { teachersContribution: [], total: 0 };
       }
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+  /**
+   * Index student data for resume generation
+   * @@params studentId
+   * @returns Array of Contributions
+   */
+  async indexStudentDataForResume(studentId: string): Promise<any> {
+    try {
+      const contributionsData = [];
+      let query = null;
+      query = this.societyRepo
+        .createQueryBuilder('society')
+        .leftJoinAndSelect('society.student', 'student')
+        .where(
+          '(society.studentId LIKE :studentId AND student.eligibilityStatus = :status)',
+          {
+            studentId: `%${studentId}%`,
+            status: EligibilityStatusEnum.ELIGIBLE,
+          },
+        );
+      contributionsData.push(await query.getMany());
+      query = this.counsellorRepo
+        .createQueryBuilder('careercounsellor')
+        .leftJoinAndSelect('careercounsellor.student', 'student')
+        .where(
+          '(careercounsellor.studentId LIKE :studentId AND student.eligibilityStatus = :status)',
+          {
+            studentId: `%${studentId}%`,
+            status: EligibilityStatusEnum.ELIGIBLE,
+          },
+        );
+      contributionsData.push(await query.getMany());
+      query = this.teachersRepo
+        .createQueryBuilder('teacher')
+        .leftJoinAndSelect('teacher.student', 'student')
+        .where(
+          '(teacher.studentId LIKE :studentId AND student.eligibilityStatus = :status)',
+          {
+            studentId: `%${studentId}%`,
+            status: EligibilityStatusEnum.ELIGIBLE,
+          },
+        );
+      contributionsData.push(await query.getMany());
+      return contributionsData;
     } catch (error) {
       throw new BadRequestException(error);
     }

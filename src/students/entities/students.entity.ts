@@ -57,6 +57,11 @@ export class Student extends Timestamps {
   batch: string;
 
   @IsOptional()
+  @Field({ nullable: true })
+  @Column({ type: 'text', nullable: true })
+  honours: string;
+
+  @IsOptional()
   @ValidateNested()
   @Field(() => Certificate, { nullable: true })
   @OneToOne(() => Certificate, (certificate) => certificate.id)

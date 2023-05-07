@@ -93,6 +93,7 @@ export class CertificatesService {
             url: certificate['url'],
             batch: certificate['batch'],
             cgpa: certificate['cgpa'],
+            honours: '',
           };
           console.log(data);
           try {
@@ -103,6 +104,7 @@ export class CertificatesService {
                 email: data.email,
                 cgpa: data.cgpa,
                 batch: data.batch,
+                honours: data.honours,
                 eligibilityStatus: EligibilityStatusEnum.ALREADY_PUBLISHED,
               });
             }

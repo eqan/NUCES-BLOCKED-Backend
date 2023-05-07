@@ -34,4 +34,9 @@ export class UpdateStudentInput {
   @IsEnum(EligibilityStatusEnum)
   @Field(() => EligibilityStatusEnum)
   eligibilityStatus: EligibilityStatusEnum;
+
+  @IsOptional()
+  @IsString()
+  @Field({ nullable: true })
+  honours: string;
 }
