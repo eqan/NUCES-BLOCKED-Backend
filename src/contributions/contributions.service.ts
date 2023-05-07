@@ -334,7 +334,9 @@ export class ContributionsService {
             studentId: `%${studentId}%`,
             status: EligibilityStatusEnum.ELIGIBLE,
           },
-        );
+        )
+        .orderBy('society.studentId', 'ASC');
+
       contributionsData.push(await query.getMany());
       query = this.counsellorRepo
         .createQueryBuilder('careercounsellor')
@@ -345,7 +347,8 @@ export class ContributionsService {
             studentId: `%${studentId}%`,
             status: EligibilityStatusEnum.ELIGIBLE,
           },
-        );
+        )
+        .orderBy('careercounsellor.studentId', 'ASC');
       contributionsData.push(await query.getMany());
       query = this.teachersRepo
         .createQueryBuilder('teacher')
@@ -356,7 +359,8 @@ export class ContributionsService {
             studentId: `%${studentId}%`,
             status: EligibilityStatusEnum.ELIGIBLE,
           },
-        );
+        )
+        .orderBy('teacher.studentId', 'ASC');
       contributionsData.push(await query.getMany());
       return contributionsData;
     } catch (error) {
