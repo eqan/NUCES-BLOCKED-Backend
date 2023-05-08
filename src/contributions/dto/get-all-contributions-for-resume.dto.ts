@@ -1,30 +1,25 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsOptional } from 'class-validator';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { CareerCounsellorContributions } from '../entities/careercounsellor.contribution.entity';
 import { SocietyHeadsContributions } from '../entities/societyhead.contribution.entity';
 import { TeachersContributions } from '../entities/teacher.contribution.entity';
 
-@ObjectType('GetAllContributions')
-export class GetAllContributions {
-  @IsOptional()
+@ObjectType()
+export class IndexAllContributionsForResumeDTO {
   @Field(() => [CareerCounsellorContributions], {
     nullable: true,
-    defaultValue: null,
+    defaultValue: [],
   })
   careerCounsellorContributions?: CareerCounsellorContributions[];
 
-  @IsOptional()
   @Field(() => [SocietyHeadsContributions], {
     nullable: true,
-    defaultValue: null,
+    defaultValue: [],
   })
   societyHeadsContributions?: SocietyHeadsContributions[];
 
-  @IsOptional()
-  @Field(() => [TeachersContributions], { nullable: true, defaultValue: null })
+  @Field(() => [TeachersContributions], {
+    nullable: true,
+    defaultValue: [],
+  })
   teachersContribution?: TeachersContributions[];
-
-  @IsOptional()
-  @Field(() => Int, { nullable: true, defaultValue: null })
-  total?: number;
 }

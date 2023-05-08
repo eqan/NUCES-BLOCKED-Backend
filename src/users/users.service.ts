@@ -20,20 +20,28 @@ export class UsersService {
   ) {}
 
   /**
+   * Encrypt User Password
+   * @param password
+   * @returns encryptedPassword
+   */
+  async encryptPassword({ password }): Promise<string> {
+    const saltOrRounds = 10;
+    return await bcrypt.hash(password, saltOrRounds);
+  }
+
+  /**
    * Create User
    * @params createUse
    * @return Users
    */
-  async create(createUserInput: CreateUserInput) {
+  async create(createUserInput: CreateUserInput): Promise<Users> {
     try {
       const oldUser = await this.usersRepo.findOneBy({
         email: createUserInput.email,
       });
       if (oldUser)
         throw new BadRequestException(SystemErrors.USER_ALREADY_PRESENT);
-      const saltOrRounds = 10;
-      const password = createUserInput.password;
-      createUserInput.password = await bcrypt.hash(password, saltOrRounds);
+      createUserInput.password = await this.encryptPassword(createUserInput);
       const user = this.usersRepo.create(createUserInput);
       return this.usersRepo.save(user);
     } catch (error) {
@@ -63,7 +71,9 @@ export class UsersService {
    * @param LoggedUserInput: message, signature, address
    * @returns access token
    */
-  async loginUser(loginUserInput: LoginUserInput) {
+  async loginUser(
+    loginUserInput: LoginUserInput,
+  ): Promise<{ access_token: string }> {
     let user = await this.show(loginUserInput.email);
     if (user) {
       user = await this.authService.validateUser(loginUserInput, user.password);
@@ -82,6 +92,11 @@ export class UsersService {
    */
   async update(updateUsersInput: UpdateUsersInput): Promise<Users> {
     try {
+      if (updateUsersInput.password) {
+        updateUsersInput.password = await this.encryptPassword(
+          updateUsersInput,
+        );
+      }
       const { id, ...rest } = updateUsersInput;
       await this.usersRepo.update({ id }, rest);
       return await this.usersRepo.findOne({ where: { id } });

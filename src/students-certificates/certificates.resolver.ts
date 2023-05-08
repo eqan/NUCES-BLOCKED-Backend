@@ -15,6 +15,27 @@ export class CertificatesResolver extends BaseProvider<Certificate> {
   constructor(private readonly certificateService: CertificatesService) {
     super();
   }
+
+  /**
+   * Create Certificate in Batches
+   * @params createrCertificateInputs
+   * @return boolean
+   */
+  // @UseGuards(JwtAuthGuard)
+  @Mutation(() => Boolean, { name: 'CreateCertificateInBatches' })
+  async createInBatches(
+    @Args('CreateCertificateInput', { type: () => [CreateCertificateDto] })
+    createCertificateInput: CreateCertificateDto[],
+  ): Promise<boolean> {
+    try {
+      return await this.certificateService.createInBatches(
+        createCertificateInput,
+      );
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
   /**
    * Create Certificate
    * @param createCertificateInput

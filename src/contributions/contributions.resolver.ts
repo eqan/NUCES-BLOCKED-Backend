@@ -8,6 +8,7 @@ import { DeleteContributionInput } from './dto/delete-contribution.input';
 import { GetContributionInput } from './dto/get-contribution.input';
 import { FilterAllContributionDto } from './dto/filter-contributions.input';
 import { GetAllContributions } from './dto/get-all-contributions.dto';
+import { IndexAllContributionsForResumeDTO } from './dto/get-all-contributions-for-resume.dto';
 
 @Resolver()
 export class ContributionsResolver {
@@ -86,7 +87,7 @@ export class ContributionsResolver {
   /**
    * Get ALl Contributions
    * @param filterContributionsDto
-   * @returns Searched or all Contribution
+   * @returns Searched for all Contribution
    */
   // @UseGuards(JwtAuthGuard)
   @Query(() => GetAllContributions, {
@@ -100,8 +101,33 @@ export class ContributionsResolver {
       const contribution = await this.contributionService.index(
         filterContributionsDto,
       );
-      // console.log(contribution);
       return contribution;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Index All Contributions For Resume
+   * @param studentId
+   * @returns Searched for all Contribution
+   */
+  // @UseGuards(JwtAuthGuard)
+  @Query(() => IndexAllContributionsForResumeDTO, {
+    name: 'IndexAllContributionsForResume',
+    nullable: true,
+  })
+  async indexAllContributionsForResume(
+    @Args('stringId', { nullable: true }) stringId: string,
+  ): Promise<any> {
+    try {
+      const contributions =
+        await this.contributionService.indexStudentDataForResume(stringId);
+      const dto = new IndexAllContributionsForResumeDTO();
+      dto.careerCounsellorContributions = contributions[1];
+      dto.societyHeadsContributions = contributions[0];
+      dto.teachersContribution = contributions[2];
+      return dto;
     } catch (error) {
       throw new BadRequestException(error);
     }

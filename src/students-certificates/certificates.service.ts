@@ -93,6 +93,7 @@ export class CertificatesService {
             url: certificate['url'],
             batch: certificate['batch'],
             cgpa: certificate['cgpa'],
+            honours: certificate['honours'],
           };
           console.log(data);
           try {
@@ -103,6 +104,7 @@ export class CertificatesService {
                 email: data.email,
                 cgpa: data.cgpa,
                 batch: data.batch,
+                honours: data.honours,
                 eligibilityStatus: EligibilityStatusEnum.ALREADY_PUBLISHED,
               });
             }
@@ -124,6 +126,25 @@ export class CertificatesService {
       }
     } catch (error) {
       this.logger.error(error);
+    }
+  }
+
+  /**
+   * Create Certificate in Batches
+   * @params createrCertificateInputs
+   * @return boolean
+   */
+  async createInBatches(
+    createCertificateInputs: CreateCertificateDto[],
+  ): Promise<boolean> {
+    try {
+      const certificates = createCertificateInputs.map((input) =>
+        this.certificateRepo.create(input),
+      );
+      await this.certificateRepo.insert(certificates);
+      return true;
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 
