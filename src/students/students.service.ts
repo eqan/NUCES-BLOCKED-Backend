@@ -11,6 +11,7 @@ import { GetAllStudents } from './dto/get-all-students.dto';
 import { UpdateStudentInput } from './dto/update-student.input';
 import { Student } from './entities/students.entity';
 import { EligibilityStatusEnum } from './entities/enums/status.enum';
+import { UpdateStudentEligibilityInput } from './dto/update-student-eligbility,input';
 
 @Injectable()
 export class StudentsService {
@@ -26,40 +27,6 @@ export class StudentsService {
     @InjectRepository(CareerCounsellorContributions)
     private counsellorRepo: Repository<CareerCounsellorContributions>,
   ) {}
-
-  /**
-   * Update All Eligibility of Students who are about to graduate
-   */
-  async updateEligibilityStatusForAllStudents(): Promise<void> {
-    try {
-      const currentYear = new Date().getFullYear();
-      await this.studentsRepo
-        .createQueryBuilder()
-        .update(Student)
-        .set({ eligibilityStatus: EligibilityStatusEnum.ELIGIBLE })
-        .where('batch::integer + 4 <= :currentYear', { currentYear })
-        .andWhere('eligibilityStatus = :notEligible', {
-          notEligible: EligibilityStatusEnum.NOT_ELIGIBLE,
-        })
-        .execute();
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
-
-  /**
-   * Update students who are eligible to in progress
-   */
-  async updateEligibleStudentsToInprogress(): Promise<void> {
-    try {
-      await this.studentsRepo.update(
-        { eligibilityStatus: EligibilityStatusEnum.ELIGIBLE },
-        { eligibilityStatus: EligibilityStatusEnum.IN_PROGRESS },
-      );
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
 
   /**
    * Create Student
@@ -127,7 +94,7 @@ export class StudentsService {
 
   /**
    * Get All Students ... With Filters
-   * @@params No Params
+   * @params filterDTO
    * @returns Array of Students and Total Number of Students
    */
   async index(filterDto: FilterStudentDto): Promise<GetAllStudents> {
@@ -151,6 +118,64 @@ export class StudentsService {
         items: await query.getMany(),
         total: await query.getCount(),
       };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Get All Students ... With Filters
+   * @@params eligbilityStatus
+   * @returns Array of Students
+   */
+  async indexByEligibilityStatus(
+    eligibilityStatus: EligibilityStatusEnum,
+  ): Promise<Student[]> {
+    try {
+      const students = await this.studentsRepo
+        .createQueryBuilder('student')
+        .select('student.id')
+        .where({ eligibilityStatus })
+        .getMany();
+
+      return students;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Update All Eligibility of Students who are about to graduate
+   */
+  async updateEligibilityStatusForAllStudents(): Promise<void> {
+    try {
+      const currentYear = new Date().getFullYear();
+      await this.studentsRepo
+        .createQueryBuilder()
+        .update(Student)
+        .set({ eligibilityStatus: EligibilityStatusEnum.ELIGIBLE })
+        .where('batch::integer + 4 <= :currentYear', { currentYear })
+        .andWhere('eligibilityStatus = :notEligible', {
+          notEligible: EligibilityStatusEnum.NOT_ELIGIBLE,
+        })
+        .execute();
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Update students eligbility
+   * @param from and to -> update eligibility from -> to
+   */
+  async updateEligibleStudents(
+    updateStudentEligibilityInput: UpdateStudentEligibilityInput,
+  ): Promise<void> {
+    try {
+      await this.studentsRepo.update(
+        { eligibilityStatus: updateStudentEligibilityInput.from },
+        { eligibilityStatus: updateStudentEligibilityInput.to },
+      );
     } catch (error) {
       throw new BadRequestException(error);
     }
