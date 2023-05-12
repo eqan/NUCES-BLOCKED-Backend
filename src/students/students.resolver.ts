@@ -17,6 +17,10 @@ export class StudentsResolver extends BaseProvider<Student> {
     super();
   }
 
+  /**
+   * Cron job that runs every year and updates the elgibility of students
+   * who are about to gradudate
+   */
   @Cron(CronExpression.EVERY_YEAR)
   async automaticEligibilityStatusUpdatingCron() {
     try {
@@ -26,11 +30,31 @@ export class StudentsResolver extends BaseProvider<Student> {
     }
   }
 
+  /**
+   * Update students who are about to graduate to eligible
+   */
+  // @UseGuards(JwtAuthGuard)
   @Mutation(() => String, { name: 'UpdateEligibilityStatusForAllStudents' })
   async updateEligibilityStatusForAllStudents(): Promise<string> {
     try {
       await this.studentService.updateEligibilityStatusForAllStudents();
       return 'Students eligibity status updated!';
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Update students who are about to graduate to eligible
+   */
+  // @UseGuards(JwtAuthGuard)
+  @Mutation(() => String, {
+    name: 'UpdateEligibleStudentsToInProgress',
+    nullable: true,
+  })
+  async updateEligibleStudentsToInProgress(): Promise<void> {
+    try {
+      await this.studentService.updateEligibleStudentsToInprogress();
     } catch (error) {
       throw new BadRequestException(error);
     }

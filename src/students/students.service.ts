@@ -27,23 +27,40 @@ export class StudentsService {
     private counsellorRepo: Repository<CareerCounsellorContributions>,
   ) {}
 
-  async updateEligibilityStatusForAllStudents() {
+  /**
+   * Update All Eligibility of Students who are about to graduate
+   */
+  async updateEligibilityStatusForAllStudents(): Promise<void> {
     try {
       const currentYear = new Date().getFullYear();
-      const students = await this.studentsRepo.findBy({
-        eligibilityStatus: EligibilityStatusEnum.NOT_ELIGIBLE,
-      });
-      for (const student of students) {
-        const batchYear = parseInt(student.batch);
-        if (batchYear + 4 <= currentYear) {
-          student.eligibilityStatus = EligibilityStatusEnum.ELIGIBLE;
-          await this.studentsRepo.save(student);
-        }
-      }
+      await this.studentsRepo
+        .createQueryBuilder()
+        .update(Student)
+        .set({ eligibilityStatus: EligibilityStatusEnum.ELIGIBLE })
+        .where('batch::integer + 4 <= :currentYear', { currentYear })
+        .andWhere('eligibilityStatus = :notEligible', {
+          notEligible: EligibilityStatusEnum.NOT_ELIGIBLE,
+        })
+        .execute();
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
+
+  /**
+   * Update students who are eligible to in progress
+   */
+  async updateEligibleStudentsToInprogress(): Promise<void> {
+    try {
+      await this.studentsRepo.update(
+        { eligibilityStatus: EligibilityStatusEnum.ELIGIBLE },
+        { eligibilityStatus: EligibilityStatusEnum.IN_PROGRESS },
+      );
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
   /**
    * Create Student
    * @params createUse

@@ -130,6 +130,20 @@ export class CertificatesService {
   }
 
   /**
+   * Update students who are in progress to already published
+   */
+  async updateInProgressStudentsToAlreadyPublished(): Promise<void> {
+    try {
+      await this.studentsRepo.update(
+        { eligibilityStatus: EligibilityStatusEnum.IN_PROGRESS },
+        { eligibilityStatus: EligibilityStatusEnum.ALREADY_PUBLISHED },
+      );
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
    * Create Certificate in Batches
    * @params createrCertificateInputs
    * @return boolean
@@ -142,6 +156,7 @@ export class CertificatesService {
         this.certificateRepo.create(input),
       );
       await this.certificateRepo.insert(certificates);
+      await this.updateInProgressStudentsToAlreadyPublished();
       return true;
     } catch (error) {
       throw new BadRequestException(error);
@@ -161,6 +176,12 @@ export class CertificatesService {
       await this.certificateRepo.save(certificate);
       const data = (await this.index({ id: createCertificateInput.id }))
         .items[0];
+      await this.studentsRepo.update(
+        {
+          id: createCertificateInput.id,
+        },
+        { eligibilityStatus: EligibilityStatusEnum.ALREADY_PUBLISHED },
+      );
       return data;
     } catch (error) {
       throw new BadRequestException(error);
@@ -193,7 +214,9 @@ export class CertificatesService {
     try {
       const { id, ...rest } = updateCertificatesInput;
       await this.certificateRepo.update({ id }, rest);
-      return this.show(id);
+      const data = (await this.index({ id: updateCertificatesInput.id }))
+        .items[0];
+      return data;
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -208,6 +231,12 @@ export class CertificatesService {
     try {
       const ids = deleteWithIds.id;
       await this.certificateRepo.delete({ id: In(ids) });
+      await this.studentsRepo.update(
+        {
+          id: In(ids),
+        },
+        { eligibilityStatus: EligibilityStatusEnum.ELIGIBLE },
+      );
       return null;
     } catch (error) {
       throw new BadRequestException(error);
