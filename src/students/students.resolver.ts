@@ -10,30 +10,13 @@ import { UpdateStudentInput } from './dto/update-student.input';
 import { Student } from './entities/students.entity';
 import { StudentsService } from './students.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { EligibilityStatusEnum } from 'src/graphqlFile';
+import { UpdateStudentEligibilityInput } from './dto/update-student-eligbility,input';
 
 @Resolver(() => Student)
 export class StudentsResolver extends BaseProvider<Student> {
   constructor(private readonly studentService: StudentsService) {
     super();
-  }
-
-  @Cron(CronExpression.EVERY_YEAR)
-  async automaticEligibilityStatusUpdatingCron() {
-    try {
-      await this.studentService.updateEligibilityStatusForAllStudents();
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
-
-  @Mutation(() => String, { name: 'UpdateEligibilityStatusForAllStudents' })
-  async updateEligibilityStatusForAllStudents(): Promise<string> {
-    try {
-      await this.studentService.updateEligibilityStatusForAllStudents();
-      return 'Students eligibity status updated!';
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
   }
 
   /**
@@ -122,6 +105,62 @@ export class StudentsResolver extends BaseProvider<Student> {
   ): Promise<GetAllStudents> {
     try {
       return await this.studentService.index(filterStudentDto);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Cron job that runs every year and updates the elgibility of students
+   * who are about to gradudate
+   * Update students who are about to graduate to eligible
+   */
+  // @UseGuards(JwtAuthGuard)
+  @Cron(CronExpression.EVERY_YEAR)
+  @Mutation(() => String, { name: 'UpdateEligibilityStatusForAllStudents' })
+  async updateEligibilityStatusForAllStudents(): Promise<string> {
+    try {
+      await this.studentService.updateEligibilityStatusForAllStudents();
+      return 'Students eligibity status updated!';
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Update students eligbility
+   * @param from and to -> update eligibility from -> to
+   */
+  // @UseGuards(JwtAuthGuard)
+  @Mutation(() => String, {
+    name: 'UpdateStudentsEligibility',
+    nullable: true,
+  })
+  async updateEligibleStudentsToInProgress(
+    @Args('UpdateEligibilityInput')
+    updateEligibilityInput: UpdateStudentEligibilityInput,
+  ): Promise<void> {
+    try {
+      await this.studentService.updateEligibleStudents(updateEligibilityInput);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Get students by eligibility status
+   * @param eligibilityStatus
+   * @returns Student array
+   */
+  // @UseGuards(JwtAuthGuard)
+  @Query(() => [Student], { name: 'IndexByEligibilityStatus', nullable: true })
+  async indexByEligibilityStatus(
+    @Args('eligibility') eligibilityStatus: EligibilityStatusEnum,
+  ): Promise<Student[]> {
+    try {
+      return await this.studentService.indexByEligibilityStatus(
+        eligibilityStatus,
+      );
     } catch (error) {
       throw new BadRequestException(error);
     }

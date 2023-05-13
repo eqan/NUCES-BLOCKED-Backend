@@ -8,7 +8,8 @@ import { DeleteContributionInput } from './dto/delete-contribution.input';
 import { GetContributionInput } from './dto/get-contribution.input';
 import { FilterAllContributionDto } from './dto/filter-contributions.input';
 import { GetAllContributions } from './dto/get-all-contributions.dto';
-import { IndexAllContributionsForResumeDTO } from './dto/get-all-contributions-for-resume.dto';
+import { IndexContributionsOnStudentIdAndEligibilityInput } from './dto/get-contributions-oneligbility.input';
+import { IndexAllContributionsForCVDTO } from './dto/get-all-contributions-for-resume.dto';
 
 @Resolver()
 export class ContributionsResolver {
@@ -113,17 +114,18 @@ export class ContributionsResolver {
    * @returns Searched for all Contribution
    */
   // @UseGuards(JwtAuthGuard)
-  @Query(() => IndexAllContributionsForResumeDTO, {
-    name: 'IndexAllContributionsForResume',
+  @Query(() => IndexAllContributionsForCVDTO, {
+    name: 'IndexAllContributionsOnCriteria',
     nullable: true,
   })
-  async indexAllContributionsForResume(
-    @Args('stringId', { nullable: true }) stringId: string,
+  async indexAllContributionsForCV(
+    @Args('IndexAllContributionsDto')
+    indexInputDto: IndexContributionsOnStudentIdAndEligibilityInput,
   ): Promise<any> {
     try {
       const contributions =
-        await this.contributionService.indexStudentDataForResume(stringId);
-      const dto = new IndexAllContributionsForResumeDTO();
+        await this.contributionService.indexStudentDataForCV(indexInputDto);
+      const dto = new IndexAllContributionsForCVDTO();
       dto.careerCounsellorContributions = contributions[1];
       dto.societyHeadsContributions = contributions[0];
       dto.teachersContribution = contributions[2];

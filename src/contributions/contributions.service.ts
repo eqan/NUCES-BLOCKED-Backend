@@ -16,6 +16,8 @@ import { FilterAllContributionDto } from './dto/filter-contributions.input';
 import { GetAllContributions } from './dto/get-all-contributions.dto';
 import { GetContributionInput } from './dto/get-contribution.input';
 import { EligibilityStatusEnum } from 'src/students/entities/enums/status.enum';
+import { IndexAllContributionsForCVDTO } from './dto/get-all-contributions-for-resume.dto';
+import { IndexContributionsOnStudentIdAndEligibilityInput } from './dto/get-contributions-oneligbility.input';
 
 @Injectable()
 export class ContributionsService {
@@ -321,8 +323,11 @@ export class ContributionsService {
    * @@params studentId
    * @returns Array of Contributions
    */
-  async indexStudentDataForResume(studentId: string): Promise<any> {
+  async indexStudentDataForCV(
+    indexInputDto: IndexContributionsOnStudentIdAndEligibilityInput,
+  ): Promise<any> {
     try {
+      const { studentId, eligibility } = indexInputDto;
       const contributionsData = [];
       let query = null;
       query = this.societyRepo
@@ -332,7 +337,7 @@ export class ContributionsService {
           '(society.studentId LIKE :studentId AND student.eligibilityStatus = :status)',
           {
             studentId: `%${studentId}%`,
-            status: EligibilityStatusEnum.ELIGIBLE,
+            status: eligibility,
           },
         )
         .orderBy('society.studentId', 'ASC');
@@ -345,7 +350,7 @@ export class ContributionsService {
           '(careercounsellor.studentId LIKE :studentId AND student.eligibilityStatus = :status)',
           {
             studentId: `%${studentId}%`,
-            status: EligibilityStatusEnum.ELIGIBLE,
+            status: eligibility,
           },
         )
         .orderBy('careercounsellor.studentId', 'ASC');
@@ -357,7 +362,7 @@ export class ContributionsService {
           '(teacher.studentId LIKE :studentId AND student.eligibilityStatus = :status)',
           {
             studentId: `%${studentId}%`,
-            status: EligibilityStatusEnum.ELIGIBLE,
+            status: eligibility,
           },
         )
         .orderBy('teacher.studentId', 'ASC');

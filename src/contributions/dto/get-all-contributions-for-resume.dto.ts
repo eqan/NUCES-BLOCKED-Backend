@@ -4,7 +4,7 @@ import { SocietyHeadsContributions } from '../entities/societyhead.contribution.
 import { TeachersContributions } from '../entities/teacher.contribution.entity';
 
 @ObjectType()
-export class IndexAllContributionsForResumeDTO {
+export class IndexAllContributionsForCVDTO {
   @Field(() => [CareerCounsellorContributions], {
     nullable: true,
     defaultValue: [],
