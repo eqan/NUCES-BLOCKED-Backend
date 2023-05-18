@@ -129,14 +129,31 @@ export class UsersService {
   async index(filterDto: FilterUserDto): Promise<GetAllUsers> {
     try {
       const { page = 1, limit = 20, ...rest } = filterDto;
-      const query = this.usersRepo
-        .createQueryBuilder('user')
-        .where('user.name LIKE :name OR user.email LIKE :email', {
-          name: `%${rest.id}%`,
-          email: `%${rest.id}%`,
-        })
-        .skip((page - 1) * limit || 0)
-        .take(limit || 10);
+      let query = null;
+      if (filterDto.id == 'VALIDATOR') {
+        query = this.usersRepo
+          .createQueryBuilder('user')
+          .where(
+            'user.name LIKE :name OR user.email LIKE :email OR user.type = :type',
+            {
+              name: `%${rest.id}%`,
+              email: `%${rest.id}%`,
+              type: rest.id,
+            },
+          )
+          .skip((page - 1) * limit || 0)
+          .take(limit || 10);
+      } else {
+        query = this.usersRepo
+          .createQueryBuilder('user')
+          .where('user.name LIKE :name OR user.email LIKE :email', {
+            name: `%${rest.id}%`,
+            email: `%${rest.id}%`,
+            // type: rest.id,
+          })
+          .skip((page - 1) * limit || 0)
+          .take(limit || 10);
+      }
 
       return {
         items: await query.getMany(),

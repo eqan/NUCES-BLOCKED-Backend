@@ -5,6 +5,7 @@ export enum UserTypes {
   TEACHER = 'TEACHER',
   CAREER_COUNSELLOR = 'CAREER_COUNSELLOR',
   SOCIETY_HEAD = 'SOCIETY_HEAD',
+  VALIDATOR = 'VALIDATOR',
   REGULAR_USER = 'REGULAR_USER',
 }
 registerEnumType(UserTypes, {
