@@ -5,7 +5,7 @@ import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CronJob } from 'cron';
 import { DeployedContracts } from 'src/contracts/deployedAddresses';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import * as ABI from '../contracts/DAO.json';
 import { FilterProposalInput } from './dto/filter.proposals.dto';
 import { GetAllProposals } from './dto/get-all-proposals.dto';
@@ -61,7 +61,7 @@ export class ProposalsService {
         return ProposalStatusEnum.NOT_STARTED;
       case 1:
         return ProposalStatusEnum.IN_PROGRESS;
-      case 1:
+      case 2:
         return ProposalStatusEnum.COMPLETED;
       default:
         break;
@@ -170,7 +170,6 @@ export class ProposalsService {
       const dataCountBlockchain = (
         await contract.functions.getNumberOfProposals()
       )[0].toNumber();
-      await contract.functions.updateProposalStatuses();
       await this.dataSaveFromBlockchainToDB(
         contract,
         0,
@@ -181,6 +180,24 @@ export class ProposalsService {
       throw new BadRequestException(error);
     }
   }
+
+    /**
+   * DELETE Results
+   * @param deleteProposals
+   * @returns Message that user successfully deleted
+   */
+    async delete(deleteWithIds: { id: string[] }): Promise<void> {
+      try {
+        const ids = deleteWithIds.id;
+        await this.proposalRepo.delete({ id: In(ids) });
+        return null;
+      } catch (error) {
+        throw new BadRequestException(error);
+      }
+    }
+  
+
+
 
   /**
    * Get All Proposals ... With Filters

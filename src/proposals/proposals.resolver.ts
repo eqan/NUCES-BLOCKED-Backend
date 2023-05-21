@@ -4,6 +4,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Proposal } from './entities/proposals.entity';
 import { ProposalsService } from './proposals.service';
 import { GetAllProposals } from './dto/get-all-proposals.dto';
+import { DeleteProposalsInput } from './dto/delete-proposal.input';
 import { FilterProposalInput } from './dto/filter.proposals.dto';
 import { CreateProposalDto } from './dto/create-proposal.input';
 
@@ -48,6 +49,25 @@ export class ProposalsResolver {
     try {
       await this.proposalsService.updateAllStatusesFromBlockchainAndDatabase();
       return 'Status have been updated!';
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  /**
+   * Delete Proposal
+   * @param deleteProposalInput
+   * @returns void
+   */
+  // @UseGuards(JwtAuthGuard)
+  @Mutation(() => Proposal, { name: 'DeleteProposal', nullable: true })
+  async delete(
+    @Args('DeleteProposalInput')
+    deleteProposalInput: DeleteProposalsInput,
+  ): Promise<void> {
+    try {
+      await this.proposalsService.delete(deleteProposalInput);
+      return null;
     } catch (error) {
       throw new BadRequestException(error);
     }
