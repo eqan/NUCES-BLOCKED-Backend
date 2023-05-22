@@ -12,6 +12,7 @@ import { SemesterResultModule } from './semester-results/semester-result.module'
 import { CertificatesModule } from './students-certificates/certificates.module';
 import { StudentsModule } from './students/students.module';
 import { UsersModule } from './users/users.module';
+import { ProposalsModule } from './proposals/proposals.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { UsersModule } from './users/users.module';
     CertificatesModule,
     ContributionsModule,
     SemesterResultModule,
+    ProposalsModule,
   ],
 })
 export class AppModule {}
