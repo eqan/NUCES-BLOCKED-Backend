@@ -1,0 +1,22 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "src/main.ts",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/graphql",
+        "dest": "src/graphqlFile.ts",
+        "methods": [
+          "POST"
+        ]
+      }
+    ],
+    "env": {
+      "DATABASE_URL": "postgres://default:k1zadVNsJge6@ep-polished-salad-615041.us-east-1.postgres.vercel-storage.com:5432/verceldb"
+    }
+  }
+  
