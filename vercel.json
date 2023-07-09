@@ -16,7 +16,7 @@
       }
     ],
     "env": {
-      "DATABASE_URL": "postgres://username:password@localhost:5432/database"
+      "DATABASE_URL": "postgres://default:k1zadVNsJge6@ep-polished-salad-615041.us-east-1.postgres.vercel-storage.com:5432/verceldb"
     }
   }
   
