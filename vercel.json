@@ -1,0 +1,22 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "src/main.ts",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/graphql",
+        "dest": "src/graphqlFile.ts",
+        "methods": [
+          "POST"
+        ]
+      }
+    ],
+    "env": {
+      "DATABASE_URL": "postgres://username:password@localhost:5432/database"
+    }
+  }
+  
