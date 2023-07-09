@@ -1,0 +1,412 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Proposal {
+  updatedAt: DateTime!
+  id: String!
+  description: String!
+  yesVotes: Float!
+  noVotes: Float!
+  status: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type CareerCounsellorContributions {
+  updatedAt: DateTime!
+  id: String!
+  studentId: String!
+  title: String!
+  careerCounsellorContributionType: CareerCounsellorContributionType!
+  contribution: String!
+  contributor: String!
+  student: Student
+}
+
+"""Types of Career Counsellor contributions"""
+enum CareerCounsellorContributionType {
+  EXCHANGE_PROGRAM
+  INTERNSHIP
+  FELLOWSHIP_PROGRAM
+}
+
+type SocietyHeadsContributions {
+  updatedAt: DateTime!
+  id: String!
+  studentId: String!
+  title: String!
+  societyHeadContributionType: SocietyHeadsContributionType!
+  contribution: String!
+  contributor: String!
+  student: Student
+}
+
+"""Types of society heads contributions"""
+enum SocietyHeadsContributionType {
+  UNIVERSITY_EVENT
+  COMPETITION_ACHIEVEMENT
+}
+
+type TeachersContributions {
+  updatedAt: DateTime!
+  id: String!
+  studentId: String!
+  title: String!
+  teacherContributionType: TeacherContributionType!
+  contribution: String!
+  contributor: String!
+  student: Student
+}
+
+"""Types of teachers contributions"""
+enum TeacherContributionType {
+  TA_SHIP
+  RESEARCH
+}
+
+type Student {
+  updatedAt: DateTime!
+  id: String!
+  email: String!
+  name: String!
+  cgpa: String!
+  batch: String!
+  honours: String
+  certificate: Certificate
+  eligibilityStatus: String!
+  CareerCounsellorContributions: [CareerCounsellorContributions!]
+  TeachersContributions: [TeachersContributions!]
+  SocietyHeadsContributions: [SocietyHeadsContributions!]
+}
+
+type Certificate {
+  updatedAt: DateTime!
+  id: String!
+  url: String!
+  student: Student
+}
+
+type Users {
+  id: String!
+  email: String!
+  name: String!
+  password: String!
+  imgUrl: String!
+  type: String!
+  subType: String!
+}
+
+type GetAllUsers {
+  items: [Users!]!
+  total: Int!
+}
+
+type LoggedUserOutput {
+  """Generated access_token of the user"""
+  access_token: String!
+}
+
+type GetAllContributions {
+  careerCounsellorContributions: [CareerCounsellorContributions!]
+  societyHeadsContributions: [SocietyHeadsContributions!]
+  teachersContribution: [TeachersContributions!]
+  total: Int
+}
+
+type IndexAllContributionsForCVDTO {
+  careerCounsellorContributions: [CareerCounsellorContributions!]
+  societyHeadsContributions: [SocietyHeadsContributions!]
+  teachersContribution: [TeachersContributions!]
+}
+
+type SemesterResult {
+  updatedAt: DateTime!
+  id: String!
+  url: String!
+  year: String!
+  type: String!
+}
+
+type GetAllResults {
+  items: [SemesterResult!]!
+  total: Int!
+}
+
+type GetAllCertificates {
+  items: [Certificate!]!
+  total: Int!
+}
+
+type GetAllStudents {
+  items: [Student!]!
+  total: Int!
+}
+
+type GetAllProposals {
+  items: [Proposal!]!
+  total: Int!
+}
+
+input ContributionTypeInput {
+  type: ContributionType!
+  contributionType: ContributionType!
+  teacherContributionType: TeacherContributionType = null
+  societyHeadContributionType: SocietyHeadsContributionType = null
+  careerCounsellorContributionType: CareerCounsellorContributionType = null
+}
+
+"""Types Of Contributions"""
+enum ContributionType {
+  SOCIETY_HEAD
+  TEACHER
+  CAREER_COUNSELLOR
+}
+
+type Query {
+  GetUserDataByUserEmail(userEmail: String!): Users
+  GetAllUsers(filterUserDto: FilterUserDto = {}): GetAllUsers!
+  GetStudentDataByUserId(studentId: String!): Student
+  GetAllStudents(filterStudentDto: FilterStudentDto = {}): GetAllStudents!
+  IndexByEligibilityStatus(eligibility: String!): [Student!]
+  GetCertificateByRollNumber(id: String!): Certificate
+  GetAllCertificates(FilterCertificateInput: FilterCertificateInput = {}): GetAllCertificates!
+  GetContribution(GetContributionInput: GetContributionInput!): Student
+  GetAllContributions(FilterContributionsDto: FilterAllContributionDto = {}): GetAllContributions!
+  IndexAllContributionsOnCriteria(IndexAllContributionsDto: IndexContributionsOnStudentIdAndEligibilityInput!): IndexAllContributionsForCVDTO
+  GetResult(id: String!): SemesterResult
+  GetAllResults(FilterResultInput: FilterResultInput = {}): GetAllResults!
+  GetAllProposals(FilterProposalInput: FilterProposalInput = {}): GetAllProposals!
+}
+
+input FilterUserDto {
+  page: Float
+  limit: Float
+  id: String
+}
+
+input FilterStudentDto {
+  page: Float
+  limit: Float
+  id: String
+}
+
+input FilterCertificateInput {
+  page: Float
+  limit: Float
+  id: String!
+}
+
+input GetContributionInput {
+  contributionId: String
+  contributor: String
+  contributionType: ContributionType!
+  studentId: String!
+}
+
+input FilterAllContributionDto {
+  page: Float
+  limit: Float
+  contributionType: ContributionType!
+  contributor: String!
+  studentId: String
+}
+
+input IndexContributionsOnStudentIdAndEligibilityInput {
+  studentId: String!
+  eligibility: EligibilityStatusEnum!
+}
+
+"""Types of eligibility criterias"""
+enum EligibilityStatusEnum {
+  NOT_ELIGIBLE
+  ELIGIBLE
+  ALREADY_PUBLISHED
+  NOT_ALLOWED
+  IN_PROGRESS
+}
+
+input FilterResultInput {
+  page: Float
+  limit: Float
+  id: String!
+}
+
+input FilterProposalInput {
+  page: Float
+  limit: Float
+  id: String!
+}
+
+type Mutation {
+  LoginUser(LoginUserInput: LoginUserInput!): LoggedUserOutput!
+  CreateUser(CreateUserInput: CreateUserInput!): Users!
+  DeleteUser(DeleteUserInput: DeleteUsersInput!): Users
+  UpdateUser(UpdateUserInput: UpdateUsersInput!): Users!
+  CreateStudent(CreateStudentInput: CreateStudentInput!): Student!
+  DeleteStudent(DeleteStudentInput: DeleteStudentsInput!): Student
+  UpdateStudent(UpdateStudentInput: UpdateStudentInput!): Student!
+  UpdateEligibilityStatusForAllStudents: String!
+  UpdateStudentsEligibility(UpdateEligibilityInput: UpdateStudentEligibilityInput!): String
+  CreateCertificateInBatches(CreateCertificateInput: [CreateCertificateDto!]!): Boolean!
+  CreateCertificate(CreateCertificateInput: CreateCertificateDto!): Certificate!
+  StartCertificateCronJob: String!
+  StopCertificateCronJob: String!
+  DeleteCertificate(DeleteCertificateInput: DeleteCertificatesInput!): Certificate
+  UpdateCertificate(UpdateCertificateInput: UpdateCertificatesInput!): Certificate!
+  CreateContribution(CreateStudentInput: ContributionDto!): Student
+  UpdateContribution(UpdateStudentInput: ContributionDto!): Student
+  DeleteContribution(DeleteContributionInput: [DeleteContributionInput!]!): Student
+  CreateResult(CreateResultInput: CreateResultDto!): SemesterResult!
+  StartResultCronJob: String!
+  StopResultCronJob: String!
+  DeleteResult(DeleteResultInput: DeleteResultsInput!): SemesterResult
+  UpdateResult(UpdateResultInput: UpdateResultsInput!): SemesterResult!
+  CreateProposal(CreateProposalInput: CreateProposalDto!): Proposal!
+  StartProposalCronJob: String!
+  StopProposalCronJob: String!
+  UpdateAllStatusFromBlockchainAndDatabase: String!
+  DeleteProposal(DeleteProposalInput: DeleteProposalsInput!): Proposal
+}
+
+input LoginUserInput {
+  """email of the user"""
+  email: String!
+
+  """password of the user"""
+  password: String!
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  password: String!
+  subType: String!
+  type: UserTypeEnum!
+  imgUrl: String!
+}
+
+enum UserTypeEnum {
+  ADMIN
+  TEACHER
+  CAREER_COUNSELLOR
+  SOCIETY_HEAD
+  VALIDATOR
+  REGULAR_USER
+}
+
+input DeleteUsersInput {
+  id: [String!]!
+}
+
+input UpdateUsersInput {
+  id: String!
+  email: String!
+  name: String
+  password: String
+  type: UserTypeEnum!
+  imgUrl: String
+  subType: String
+}
+
+input CreateStudentInput {
+  id: String!
+  name: String!
+  email: String!
+  cgpa: String!
+  batch: String!
+  honours: String
+}
+
+input DeleteStudentsInput {
+  id: [String!]!
+}
+
+input UpdateStudentInput {
+  id: String
+  email: String
+  name: String
+  cgpa: String
+  batch: String!
+  eligibilityStatus: EligibilityStatusEnum!
+  honours: String
+}
+
+input UpdateStudentEligibilityInput {
+  from: EligibilityStatusEnum!
+  to: EligibilityStatusEnum!
+}
+
+input CreateCertificateDto {
+  id: String!
+  url: String!
+}
+
+input DeleteCertificatesInput {
+  id: [String!]!
+}
+
+input UpdateCertificatesInput {
+  id: String
+  studentId: String
+  url: String
+}
+
+input ContributionDto {
+  contributionType: ContributionTypeInput!
+  id: String
+  title: String!
+  contribution: String!
+  contributor: String!
+  studentId: String!
+}
+
+input DeleteContributionInput {
+  contributionId: String
+  contributionType: ContributionType!
+  studentId: String!
+}
+
+input CreateResultDto {
+  year: String!
+  type: SemesterTypesEnum!
+  url: String!
+}
+
+"""Types of semesters"""
+enum SemesterTypesEnum {
+  SPRING
+  SUMMER
+  FALL
+}
+
+input DeleteResultsInput {
+  id: [String!]!
+}
+
+input UpdateResultsInput {
+  id: String!
+  url: String!
+}
+
+input CreateProposalDto {
+  id: String!
+  description: String!
+  yesVotes: Float!
+  noVotes: Float!
+  status: ProposalStatusEnum!
+}
+
+"""Types of statuses for proposal"""
+enum ProposalStatusEnum {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+input DeleteProposalsInput {
+  id: [String!]!
+}
